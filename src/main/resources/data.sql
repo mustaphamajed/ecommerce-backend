@@ -1,5 +1,7 @@
 -- Seed data: runs on every start, so every insert must be safe to repeat (ON CONFLICT DO NOTHING)
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_categories_name_lower ON categories (lower(name));
+
 INSERT INTO roles (name, description, built_in) VALUES
     ('ADMIN',         'Full access',                            true),
     ('STOCK_MANAGER', 'Manages stock in assigned warehouses',   true),
