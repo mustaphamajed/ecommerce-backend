@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh", "/api/auth/logout")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").hasAuthority("product:read")
                         .requestMatchers("/api/categories/**").hasAuthority("product:write")
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasAuthority("user:read")
