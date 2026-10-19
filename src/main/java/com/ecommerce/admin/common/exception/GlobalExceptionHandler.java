@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +33,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleApiException(ApiException e) {
         return ResponseEntity.status(e.status())
                 .body(ApiErrorResponse.of(e.title(), e.getMessage(), e.code(), e.property()));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthentication(AuthenticationException e) {
+        String code = e instanceof InvalidBearerTokenException ? "INVALID_TOKEN" : "UNAUTHENTICATED";
+        String detail = e instanceof InvalidBearerTokenException
+                ? "The access token is invalid or expired"
+                : "Authentication is required";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiErrorResponse.of("Unauthorized", detail, code, null));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiErrorResponse.of("Forbidden", "You don't have permission to do this", "FORBIDDEN", null));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
