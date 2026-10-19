@@ -1,5 +1,6 @@
 package com.ecommerce.admin.user.domain;
 
+import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.warehouse.domain.Warehouse;
 import jakarta.persistence.Column;
@@ -13,9 +14,11 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -86,6 +89,12 @@ public class User {
 
     public boolean hasRole(String roleName) {
         return roles.stream().anyMatch(role -> role.getName().equals(roleName));
+    }
+
+    public Set<Permission> getPermissions() {
+        return roles.stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
     }
 
     public void assignRoles(Set<Role> roles) {
