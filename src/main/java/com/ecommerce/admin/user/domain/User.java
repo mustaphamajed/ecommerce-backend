@@ -1,7 +1,7 @@
-package com.ecommerce.admin.user;
+package com.ecommerce.admin.user.domain;
 
-import com.ecommerce.admin.role.Role;
-import com.ecommerce.admin.warehouse.Warehouse;
+import com.ecommerce.admin.role.domain.Role;
+import com.ecommerce.admin.warehouse.domain.Warehouse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -72,6 +72,20 @@ public class User {
         this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public void updateProfile(String email, String firstName, String lastName) {
+        this.email = email.trim().toLowerCase(Locale.ROOT);
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public void changePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public boolean hasRole(String roleName) {
+        return roles.stream().anyMatch(role -> role.getName().equals(roleName));
     }
 
     public void assignRoles(Set<Role> roles) {

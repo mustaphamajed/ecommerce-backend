@@ -1,4 +1,4 @@
-package com.ecommerce.admin.role;
+package com.ecommerce.admin.role.domain;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -21,6 +21,8 @@ import java.util.Set;
 @Table(name = "roles")
 public class Role {
 
+    public static final String ADMIN = "ADMIN";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +32,6 @@ public class Role {
 
     @Column(columnDefinition = "text")
     private String description;
-
 
     @Column(nullable = false)
     private boolean builtIn;

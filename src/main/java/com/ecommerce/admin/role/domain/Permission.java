@@ -1,4 +1,4 @@
-package com.ecommerce.admin.role;
+package com.ecommerce.admin.role.domain;
 
 
 public enum Permission {

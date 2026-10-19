@@ -1,4 +1,4 @@
-package com.ecommerce.admin.warehouse;
+package com.ecommerce.admin.warehouse.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
