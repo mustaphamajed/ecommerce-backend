@@ -1,12 +1,11 @@
 package com.ecommerce.admin.category.query;
 
 import com.ecommerce.admin.category.exception.CategoryNotFoundException;
+import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.SearchPatterns;
-import com.ecommerce.admin.common.exception.InvalidSortException;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +22,7 @@ public class CategoryQueryService {
     }
 
     public PageResponse<CategoryView> search(String query, Pageable pageable) {
-        pageable.getSort().stream()
-                .map(Sort.Order::getProperty)
-                .filter(property -> !SORTABLE_PROPERTIES.contains(property))
-                .findFirst()
-                .ifPresent(property -> {
-                    throw new InvalidSortException(property, SORTABLE_PROPERTIES);
-                });
+        AllowedSort.check(pageable, SORTABLE_PROPERTIES);
         return PageResponse.from(repository.search(SearchPatterns.contains(query), pageable));
     }
 
