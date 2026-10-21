@@ -1,0 +1,64 @@
+package com.ecommerce.admin.stock.api;
+
+import com.ecommerce.admin.common.PageResponse;
+import com.ecommerce.admin.stock.command.adjust.AdjustStockCommand;
+import com.ecommerce.admin.stock.command.adjust.AdjustStockHandler;
+import com.ecommerce.admin.stock.query.StockLevelView;
+import com.ecommerce.admin.stock.query.StockMovementView;
+import com.ecommerce.admin.stock.query.StockQueryService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/stock")
+public class StockController {
+
+    private final AdjustStockHandler adjustStock;
+    private final StockQueryService queries;
+
+    public StockController(AdjustStockHandler adjustStock, StockQueryService queries) {
+        this.adjustStock = adjustStock;
+        this.queries = queries;
+    }
+
+    @GetMapping("/levels")
+    public PageResponse<StockLevelView> levels(
+            @RequestParam Long warehouseId,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Integer maxQuantity,
+            @PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        return queries.findLevels(warehouseId, q, maxQuantity, pageable);
+    }
+
+    @GetMapping("/movements")
+    public PageResponse<StockMovementView> movements(
+            @RequestParam(required = false) Long productId,
+            @RequestParam(required = false) Long warehouseId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return queries.findMovements(productId, warehouseId, pageable);
+    }
+
+    @PostMapping("/adjustments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public StockMovementView adjust(@Valid @RequestBody AdjustStockRequest request, @AuthenticationPrincipal Jwt jwt) {
+        Long movementId = adjustStock.handle(new AdjustStockCommand(
+                request.productId(),
+                request.warehouseId(),
+                request.quantityChange(),
+                request.reason(),
+                request.note(),
+                Long.valueOf(jwt.getSubject())));
+        return queries.findMovement(movementId);
+    }
+}

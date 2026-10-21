@@ -43,6 +43,11 @@ public class StockQueryService {
         return PageResponse.from(repository.findMovements(productId, warehouseId, newestFirst));
     }
 
+    public StockMovementView findMovement(Long id) {
+        return repository.findMovementById(id)
+                .orElseThrow(() -> new IllegalStateException("Movement " + id + " was just created but can't be read"));
+    }
+
     private Pageable toLevelSort(Pageable pageable) {
         Sort sort = Sort.unsorted();
         for (Sort.Order order : pageable.getSort()) {

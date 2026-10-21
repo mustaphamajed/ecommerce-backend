@@ -1,6 +1,7 @@
 package com.ecommerce.admin.stock.query;
 
 import com.ecommerce.admin.stock.domain.Stock;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -40,4 +41,16 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
             """ + FROM_MOVEMENTS,
             countQuery = "SELECT COUNT(m) " + FROM_MOVEMENTS)
     Page<StockMovementView> findMovements(Long productId, Long warehouseId, Pageable pageable);
+
+    @Query("""
+            SELECT new com.ecommerce.admin.stock.query.StockMovementView(
+                m.id, p.id, p.sku, p.name, w.id, w.code, m.quantityChange, m.reason, m.note,
+                CONCAT(u.firstName, ' ', u.lastName), m.createdAt)
+            FROM StockMovement m
+            JOIN m.product p
+            JOIN m.warehouse w
+            LEFT JOIN m.createdBy u
+            WHERE m.id = :id
+            """)
+    Optional<StockMovementView> findMovementById(Long id);
 }
