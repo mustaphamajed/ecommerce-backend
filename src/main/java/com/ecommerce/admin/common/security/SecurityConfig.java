@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/refresh", "/api/auth/logout")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/stock/**").hasAuthority("stock:read")
+                        .requestMatchers(HttpMethod.POST, "/api/stock/adjustments").hasAuthority("stock:adjust")
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAuthority("product:read")
                         .requestMatchers("/api/products/**").hasAuthority("product:write")
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").hasAuthority("product:read")
