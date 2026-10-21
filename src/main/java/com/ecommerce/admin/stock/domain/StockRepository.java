@@ -10,6 +10,14 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     Optional<Stock> findByProductIdAndWarehouseId(Long productId, Long warehouseId);
 
+    @Modifying
+    @Query(nativeQuery = true, value = """
+            INSERT INTO stock (product_id, warehouse_id, quantity, version, updated_at)
+            VALUES (:productId, :warehouseId, 0, 0, :now)
+            ON CONFLICT (product_id, warehouse_id) DO NOTHING
+            """)
+    void createIfMissing(Long productId, Long warehouseId, Instant now);
+
     @Modifying(flushAutomatically = true)
     @Query("""
             UPDATE Stock s
