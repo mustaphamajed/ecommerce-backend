@@ -50,6 +50,11 @@ public class Role {
         this.description = description;
     }
 
+    public void rename(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public void replacePermissions(Set<Permission> permissions) {
         this.permissions.clear();
         this.permissions.addAll(permissions);
