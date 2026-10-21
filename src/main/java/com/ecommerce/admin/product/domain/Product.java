@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -46,6 +47,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ProductStatus status = ProductStatus.ACTIVE;
+
+    @Column(length = 255)
+    private String imageKey;
 
     @Version
     private Long version;
@@ -87,6 +91,20 @@ public class Product {
 
     public boolean isArchived() {
         return status == ProductStatus.ARCHIVED;
+    }
+
+    public Optional<String> replaceImage(String newImageKey) {
+        var previousKey = Optional.ofNullable(imageKey);
+        this.imageKey = newImageKey;
+        return previousKey;
+    }
+
+    public Optional<String> removeImage() {
+        return replaceImage(null);
+    }
+
+    public Optional<String> getImageKey() {
+        return Optional.ofNullable(imageKey);
     }
 
     public Long getId() {
