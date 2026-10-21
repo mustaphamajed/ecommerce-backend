@@ -1,4 +1,4 @@
-package com.ecommerce.admin.stock;
+package com.ecommerce.admin.stock.domain;
 
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.warehouse.domain.Warehouse;
