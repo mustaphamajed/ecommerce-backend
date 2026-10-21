@@ -1,5 +1,6 @@
 package com.ecommerce.admin.common.exception;
 
+import com.ecommerce.admin.common.media.MediaService;
 import java.util.List;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
@@ -105,6 +108,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpMessageNotReadableException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         var body = ApiErrorResponse.of("Malformed request", "The request body is missing or isn't valid JSON",
                 "MALFORMED_JSON", null);
+        return handleExceptionInternal(e, body, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMaxUploadSizeExceededException(
+            MaxUploadSizeExceededException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        var body = ApiErrorResponse.of("File too large",
+                "The file must be " + MediaService.MAX_IMAGE_SIZE_BYTES / 1024 / 1024 + " MB or less",
+                "FILE_TOO_LARGE", null);
+        return handleExceptionInternal(e, body, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(
+            MissingServletRequestPartException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        var body = ApiErrorResponse.of("Missing file", "The '" + e.getRequestPartName() + "' file is required",
+                "MISSING_FILE", e.getRequestPartName());
         return handleExceptionInternal(e, body, headers, status, request);
     }
 

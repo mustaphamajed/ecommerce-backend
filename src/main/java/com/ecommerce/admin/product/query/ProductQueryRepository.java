@@ -1,5 +1,6 @@
 package com.ecommerce.admin.product.query;
 
+import com.ecommerce.admin.common.media.MediaService;
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.domain.ProductStatus;
 import java.util.Optional;
@@ -10,11 +11,14 @@ import org.springframework.data.repository.Repository;
 
 public interface ProductQueryRepository extends Repository<Product, Long> {
 
+    String IMAGE_URL = "CASE WHEN p.imageKey IS NULL THEN NULL ELSE CONCAT('"
+            + MediaService.URL_PREFIX + "', p.imageKey) END";
+
     String SELECT_VIEW = """
             SELECT new com.ecommerce.admin.product.query.ProductView(
                 p.id, p.sku, p.name, p.description, p.price, p.status,
-                c.id, c.name, p.createdAt, p.updatedAt)
-            """;
+                c.id, c.name,
+            """ + IMAGE_URL + ", p.createdAt, p.updatedAt)";
 
     String FROM_FILTERED = """
              FROM Product p LEFT JOIN p.category c

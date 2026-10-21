@@ -1,6 +1,7 @@
 package com.ecommerce.admin.catalog.query;
 
 import com.ecommerce.admin.product.domain.Product;
+import com.ecommerce.admin.product.query.ProductQueryRepository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +19,8 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
 
     @Query(value = """
             SELECT new com.ecommerce.admin.catalog.query.CatalogProductView(
-                p.id, p.sku, p.name, p.description, p.price, c.name, c.slug)
-            """ + FROM_ACTIVE_PRODUCTS,
+                p.id, p.sku, p.name, p.description, p.price, c.name, c.slug,
+            """ + ProductQueryRepository.IMAGE_URL + ")" + FROM_ACTIVE_PRODUCTS,
             countQuery = "SELECT COUNT(p) " + FROM_ACTIVE_PRODUCTS)
     Page<CatalogProductView> searchProducts(String pattern, String categorySlug, Pageable pageable);
 

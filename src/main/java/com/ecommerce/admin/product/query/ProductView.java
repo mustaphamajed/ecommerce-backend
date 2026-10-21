@@ -13,6 +13,7 @@ public record ProductView(
         ProductStatus status,
         Long categoryId,
         String categoryName,
+        String imageUrl,
         Instant createdAt,
         Instant updatedAt) {
 }

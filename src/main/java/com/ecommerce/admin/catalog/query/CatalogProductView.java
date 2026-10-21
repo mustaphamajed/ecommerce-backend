@@ -9,5 +9,6 @@ public record CatalogProductView(
         String description,
         BigDecimal price,
         String categoryName,
-        String categorySlug) {
+        String categorySlug,
+        String imageUrl) {
 }
