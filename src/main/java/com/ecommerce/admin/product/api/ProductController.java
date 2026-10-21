@@ -1,6 +1,7 @@
 package com.ecommerce.admin.product.api;
 
 import com.ecommerce.admin.common.PageResponse;
+import com.ecommerce.admin.common.web.ApiResponses;
 import com.ecommerce.admin.product.command.archive.ArchiveProductCommand;
 import com.ecommerce.admin.product.command.archive.ArchiveProductHandler;
 import com.ecommerce.admin.product.command.create.CreateProductCommand;
@@ -68,26 +69,33 @@ public class ProductController {
     public ResponseEntity<ProductView> create(@Valid @RequestBody ProductRequest request) {
         Long id = createProduct.handle(new CreateProductCommand(
                 request.sku(), request.name(), request.description(), request.price(), request.categoryId()));
-        return ResponseEntity.created(URI.create("/api/products/" + id))
-                .body(queries.findById(id));
+        var product = queries.findById(id);
+        return ApiResponses.created(URI.create("/api/products/" + id), product, describe(product) + " created");
     }
 
     @PutMapping("/{id}")
-    public ProductView update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+    public ResponseEntity<ProductView> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         updateProduct.handle(new UpdateProductCommand(
                 id, request.sku(), request.name(), request.description(), request.price(), request.categoryId()));
-        return queries.findById(id);
+        var product = queries.findById(id);
+        return ApiResponses.ok(product, describe(product) + " updated");
     }
 
     @PostMapping("/{id}/archive")
-    public ProductView archive(@PathVariable Long id) {
+    public ResponseEntity<ProductView> archive(@PathVariable Long id) {
         archiveProduct.handle(new ArchiveProductCommand(id));
-        return queries.findById(id);
+        var product = queries.findById(id);
+        return ApiResponses.ok(product, describe(product) + " archived: it's hidden from the store");
     }
 
     @PostMapping("/{id}/restore")
-    public ProductView restore(@PathVariable Long id) {
+    public ResponseEntity<ProductView> restore(@PathVariable Long id) {
         restoreProduct.handle(new RestoreProductCommand(id));
-        return queries.findById(id);
+        var product = queries.findById(id);
+        return ApiResponses.ok(product, describe(product) + " restored: it's back in the store");
+    }
+
+    private static String describe(ProductView product) {
+        return "Product " + product.sku();
     }
 }

@@ -1,15 +1,17 @@
 package com.ecommerce.admin.stock.api;
 
 import com.ecommerce.admin.common.PageResponse;
+import com.ecommerce.admin.common.web.ApiResponses;
 import com.ecommerce.admin.stock.command.adjust.AdjustStockCommand;
 import com.ecommerce.admin.stock.command.adjust.AdjustStockHandler;
 import com.ecommerce.admin.stock.query.StockLevelView;
 import com.ecommerce.admin.stock.query.StockMovementView;
 import com.ecommerce.admin.stock.query.StockQueryService;
 import jakarta.validation.Valid;
+import java.net.URI;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,8 +51,7 @@ public class StockController {
     }
 
     @PostMapping("/adjustments")
-    @ResponseStatus(HttpStatus.CREATED)
-    public StockMovementView adjust(@Valid @RequestBody AdjustStockRequest request, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<StockMovementView> adjust(@Valid @RequestBody AdjustStockRequest request, @AuthenticationPrincipal Jwt jwt) {
         Long movementId = adjustStock.handle(new AdjustStockCommand(
                 request.productId(),
                 request.warehouseId(),
@@ -59,6 +59,11 @@ public class StockController {
                 request.reason(),
                 request.note(),
                 Long.valueOf(jwt.getSubject())));
-        return queries.findMovement(movementId);
+        var movement = queries.findMovement(movementId);
+        String change = movement.quantityChange() > 0 ? "+" + movement.quantityChange() : String.valueOf(movement.quantityChange());
+        return ApiResponses.created(
+                URI.create("/api/stock/movements/" + movementId),
+                movement,
+                "Stock of " + movement.sku() + " in " + movement.warehouseCode() + ": " + change);
     }
 }

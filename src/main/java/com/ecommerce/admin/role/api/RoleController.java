@@ -1,5 +1,6 @@
 package com.ecommerce.admin.role.api;
 
+import com.ecommerce.admin.common.web.ApiResponses;
 import com.ecommerce.admin.role.command.create.CreateRoleCommand;
 import com.ecommerce.admin.role.command.create.CreateRoleHandler;
 import com.ecommerce.admin.role.command.delete.DeleteRoleCommand;
@@ -11,7 +12,6 @@ import com.ecommerce.admin.role.query.RoleView;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -61,18 +60,21 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<RoleView> create(@Valid @RequestBody RoleRequest request) {
         Long id = createRole.handle(new CreateRoleCommand(request.name(), request.description(), request.toPermissions()));
-        return ResponseEntity.created(URI.create("/api/roles/" + id)).body(queries.findById(id));
+        var role = queries.findById(id);
+        return ApiResponses.created(URI.create("/api/roles/" + id), role, "Role " + role.name() + " created");
     }
 
     @PutMapping("/{id}")
-    public RoleView update(@PathVariable Long id, @Valid @RequestBody RoleRequest request) {
+    public ResponseEntity<RoleView> update(@PathVariable Long id, @Valid @RequestBody RoleRequest request) {
         updateRole.handle(new UpdateRoleCommand(id, request.name(), request.description(), request.toPermissions()));
-        return queries.findById(id);
+        var role = queries.findById(id);
+        return ApiResponses.ok(role, "Role " + role.name() + " updated, users get the change at their next sign-in refresh");
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        String name = queries.findById(id).name();
         deleteRole.handle(new DeleteRoleCommand(id));
+        return ApiResponses.noContent("Role " + name + " deleted");
     }
 }

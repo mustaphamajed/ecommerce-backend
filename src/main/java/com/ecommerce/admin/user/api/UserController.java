@@ -1,6 +1,7 @@
 package com.ecommerce.admin.user.api;
 
 import com.ecommerce.admin.common.PageResponse;
+import com.ecommerce.admin.common.web.ApiResponses;
 import com.ecommerce.admin.user.command.create.CreateUserCommand;
 import com.ecommerce.admin.user.command.create.CreateUserHandler;
 import com.ecommerce.admin.user.command.disable.DisableUserCommand;
@@ -21,7 +22,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -87,43 +86,53 @@ public class UserController {
                 request.password(),
                 request.roleIds(),
                 request.warehouseIds()));
-        return ResponseEntity.created(URI.create("/api/users/" + id))
-                .body(queries.findById(id));
+        var user = queries.findById(id);
+        return ApiResponses.created(URI.create("/api/users/" + id), user, "User " + user.email() + " created");
     }
 
     @PutMapping("/{id}")
-    public UserView update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserView> update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
         updateUser.handle(new UpdateUserCommand(id, request.email(), request.firstName(), request.lastName()));
-        return queries.findById(id);
+        var user = queries.findById(id);
+        return ApiResponses.ok(user, "Profile of " + fullName(user) + " updated");
     }
 
     @PutMapping("/{id}/roles")
-    public UserView assignRoles(@PathVariable Long id, @Valid @RequestBody AssignRolesRequest request) {
+    public ResponseEntity<UserView> assignRoles(@PathVariable Long id, @Valid @RequestBody AssignRolesRequest request) {
         assignRoles.handle(new AssignUserRolesCommand(id, request.roleIds()));
-        return queries.findById(id);
+        var user = queries.findById(id);
+        return ApiResponses.ok(user, "Roles of " + fullName(user) + " updated");
     }
 
     @PutMapping("/{id}/warehouses")
-    public UserView assignWarehouses(@PathVariable Long id, @Valid @RequestBody AssignWarehousesRequest request) {
+    public ResponseEntity<UserView> assignWarehouses(
+            @PathVariable Long id, @Valid @RequestBody AssignWarehousesRequest request) {
         assignWarehouses.handle(new AssignUserWarehousesCommand(id, request.warehouseIds()));
-        return queries.findById(id);
+        var user = queries.findById(id);
+        return ApiResponses.ok(user, "Warehouses of " + fullName(user) + " updated");
     }
 
     @PutMapping("/{id}/password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<Void> resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordRequest request) {
         resetPassword.handle(new ResetUserPasswordCommand(id, request.password()));
+        return ApiResponses.noContent("Password of " + fullName(queries.findById(id)) + " changed");
     }
 
     @PostMapping("/{id}/enable")
-    public UserView enable(@PathVariable Long id) {
+    public ResponseEntity<UserView> enable(@PathVariable Long id) {
         enableUser.handle(new EnableUserCommand(id));
-        return queries.findById(id);
+        var user = queries.findById(id);
+        return ApiResponses.ok(user, fullName(user) + " can log in again");
     }
 
     @PostMapping("/{id}/disable")
-    public UserView disable(@PathVariable Long id) {
+    public ResponseEntity<UserView> disable(@PathVariable Long id) {
         disableUser.handle(new DisableUserCommand(id));
-        return queries.findById(id);
+        var user = queries.findById(id);
+        return ApiResponses.ok(user, fullName(user) + " can no longer log in");
+    }
+
+    private static String fullName(UserView user) {
+        return user.firstName() + " " + user.lastName();
     }
 }
