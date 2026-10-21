@@ -1,4 +1,4 @@
-package com.ecommerce.admin.product;
+package com.ecommerce.admin.product.domain;
 
 import com.ecommerce.admin.category.domain.Category;
 import jakarta.persistence.Column;
@@ -61,16 +61,32 @@ public class Product {
     protected Product() {
     }
 
-    public Product(String sku, String name, BigDecimal price) {
+    public Product(String sku, String name, String description, BigDecimal price, Category category) {
         this.sku = sku;
         this.name = name;
+        this.description = description;
         this.price = price;
+        this.category = category;
     }
 
-    public void update(String sku, String name, BigDecimal price) {
+    public void update(String sku, String name, String description, BigDecimal price, Category category) {
         this.sku = sku;
         this.name = name;
+        this.description = description;
         this.price = price;
+        this.category = category;
+    }
+
+    public void archive() {
+        this.status = ProductStatus.ARCHIVED;
+    }
+
+    public void restore() {
+        this.status = ProductStatus.ACTIVE;
+    }
+
+    public boolean isArchived() {
+        return status == ProductStatus.ARCHIVED;
     }
 
     public Long getId() {

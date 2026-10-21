@@ -1,6 +1,6 @@
 package com.ecommerce.admin.catalog.query;
 
-import com.ecommerce.admin.product.Product;
+import com.ecommerce.admin.product.domain.Product;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +11,7 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
 
     String FROM_ACTIVE_PRODUCTS = """
              FROM Product p LEFT JOIN p.category c
-             WHERE p.status = com.ecommerce.admin.product.ProductStatus.ACTIVE
+             WHERE p.status = com.ecommerce.admin.product.domain.ProductStatus.ACTIVE
                AND (LOWER(p.name) LIKE :pattern ESCAPE '!' OR LOWER(p.sku) LIKE :pattern ESCAPE '!')
                AND (:categorySlug IS NULL OR c.slug = :categorySlug)
             """;
@@ -28,7 +28,7 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
             FROM Category c
             WHERE EXISTS (
                 SELECT 1 FROM Product p
-                WHERE p.category = c AND p.status = com.ecommerce.admin.product.ProductStatus.ACTIVE)
+                WHERE p.category = c AND p.status = com.ecommerce.admin.product.domain.ProductStatus.ACTIVE)
             ORDER BY c.name
             """)
     List<CatalogCategoryView> findCategoriesWithActiveProducts();

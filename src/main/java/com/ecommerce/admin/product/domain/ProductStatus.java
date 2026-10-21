@@ -1,4 +1,4 @@
-package com.ecommerce.admin.product;
+package com.ecommerce.admin.product.domain;
 
 public enum ProductStatus {
     ACTIVE,
