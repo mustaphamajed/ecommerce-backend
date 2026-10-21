@@ -7,6 +7,7 @@ import com.ecommerce.admin.auth.command.refresh.RefreshTokensHandler;
 import com.ecommerce.admin.auth.domain.AuthTokens;
 import com.ecommerce.admin.auth.query.CurrentUserQueryService;
 import com.ecommerce.admin.auth.query.CurrentUserView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Auth", description = "Login, token refresh, logout and the current user")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

@@ -13,6 +13,7 @@ import com.ecommerce.admin.product.command.update.UpdateProductHandler;
 import com.ecommerce.admin.product.domain.ProductStatus;
 import com.ecommerce.admin.product.query.ProductQueryService;
 import com.ecommerce.admin.product.query.ProductView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Products", description = "Product catalog management, archive and restore")
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {

@@ -18,6 +18,7 @@ import com.ecommerce.admin.user.command.warehouses.AssignUserWarehousesCommand;
 import com.ecommerce.admin.user.command.warehouses.AssignUserWarehousesHandler;
 import com.ecommerce.admin.user.query.UserQueryService;
 import com.ecommerce.admin.user.query.UserView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Users", description = "Admin panel users, their roles and warehouses")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

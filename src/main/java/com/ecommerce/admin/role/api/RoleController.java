@@ -9,6 +9,7 @@ import com.ecommerce.admin.role.command.update.UpdateRoleCommand;
 import com.ecommerce.admin.role.command.update.UpdateRoleHandler;
 import com.ecommerce.admin.role.query.RoleQueryService;
 import com.ecommerce.admin.role.query.RoleView;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Roles", description = "Roles and their permissions")
 @RestController
 @RequestMapping("/api/roles")
 public class RoleController {

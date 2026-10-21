@@ -4,6 +4,7 @@ import com.ecommerce.admin.catalog.query.CatalogCategoryView;
 import com.ecommerce.admin.catalog.query.CatalogProductView;
 import com.ecommerce.admin.catalog.query.CatalogQueryService;
 import com.ecommerce.admin.common.PageResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Catalog (public)", description = "Active products and categories for the storefront, no login needed")
 @RestController
 @RequestMapping("/api/catalog")
 public class CatalogController {

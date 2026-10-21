@@ -7,6 +7,7 @@ import com.ecommerce.admin.stock.command.adjust.AdjustStockHandler;
 import com.ecommerce.admin.stock.query.StockLevelView;
 import com.ecommerce.admin.stock.query.StockMovementView;
 import com.ecommerce.admin.stock.query.StockQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Stock", description = "Stock levels per warehouse, adjustments and history")
 @RestController
 @RequestMapping("/api/stock")
 public class StockController {

@@ -10,6 +10,7 @@ import com.ecommerce.admin.category.query.CategoryQueryService;
 import com.ecommerce.admin.category.query.CategoryView;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.web.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Categories", description = "Product categories")
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
