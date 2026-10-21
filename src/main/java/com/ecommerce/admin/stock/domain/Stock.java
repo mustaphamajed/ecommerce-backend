@@ -26,6 +26,8 @@ import org.hibernate.annotations.UpdateTimestamp;
         check = @CheckConstraint(name = "ck_stock_quantity_not_negative", constraint = "quantity >= 0"))
 public class Stock {
 
+    public static final int LOW_STOCK_THRESHOLD = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
