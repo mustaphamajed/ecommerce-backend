@@ -1,4 +1,4 @@
-package com.ecommerce.admin.product.domain;
+package com.ecommerce.admin.common.media;
 
 import java.util.Arrays;
 import java.util.Optional;

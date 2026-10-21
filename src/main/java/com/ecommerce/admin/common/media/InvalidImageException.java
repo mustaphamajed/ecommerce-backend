@@ -1,4 +1,4 @@
-package com.ecommerce.admin.product.exception;
+package com.ecommerce.admin.common.media;
 
 import com.ecommerce.admin.common.exception.BadRequestException;
 
