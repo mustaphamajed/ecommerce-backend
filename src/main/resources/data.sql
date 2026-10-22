@@ -31,3 +31,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO warehouses (code, name, created_at) VALUES ('MAIN', 'Main warehouse', now())
 ON CONFLICT (code) DO NOTHING;
+
+INSERT INTO stock_products (id, sku, name, archived)
+SELECT id, sku, name, status = 'ARCHIVED' FROM products
+ON CONFLICT (id) DO UPDATE SET sku = EXCLUDED.sku, name = EXCLUDED.name, archived = EXCLUDED.archived;
