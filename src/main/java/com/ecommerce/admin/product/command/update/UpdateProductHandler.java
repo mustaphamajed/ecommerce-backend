@@ -1,9 +1,11 @@
 package com.ecommerce.admin.product.command.update;
 
 import com.ecommerce.admin.common.CommandHandler;
+import com.ecommerce.admin.product.ProductChanged;
 import com.ecommerce.admin.product.domain.ProductCategories;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import com.ecommerce.admin.product.exception.DuplicateSkuException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +15,13 @@ public class UpdateProductHandler implements CommandHandler<UpdateProductCommand
 
     private final ProductRepository repository;
     private final ProductCategories categories;
+    private final ApplicationEventPublisher events;
 
-    public UpdateProductHandler(ProductRepository repository, ProductCategories categories) {
+    public UpdateProductHandler(
+            ProductRepository repository, ProductCategories categories, ApplicationEventPublisher events) {
         this.repository = repository;
         this.categories = categories;
+        this.events = events;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class UpdateProductHandler implements CommandHandler<UpdateProductCommand
                 command.description(),
                 command.price(),
                 categories.resolve(command.categoryId()));
+        events.publishEvent(new ProductChanged(product.getId(), product.getSku(), product.getName(), product.isArchived()));
         return null;
     }
 }
