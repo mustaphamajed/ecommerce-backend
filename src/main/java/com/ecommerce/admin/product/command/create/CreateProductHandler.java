@@ -44,7 +44,7 @@ public class CreateProductHandler implements CommandHandler<CreateProductCommand
                 categories.resolve(command.categoryId()));
         Long id = repository.save(product).getId();
         metrics.productCreated();
-        events.publishEvent(new ProductChanged(id, product.getSku(), product.getName(), product.isArchived()));
+        events.publishEvent(ProductChanged.from(product));
         return id;
     }
 }

@@ -28,7 +28,7 @@ public class ArchiveProductHandler implements CommandHandler<ArchiveProductComma
         var product = repository.findByIdOrThrow(command.productId());
         product.archive();
         metrics.productArchived();
-        events.publishEvent(new ProductChanged(product.getId(), product.getSku(), product.getName(), product.isArchived()));
+        events.publishEvent(ProductChanged.from(product));
         return null;
     }
 }

@@ -23,7 +23,7 @@ public class RestoreProductHandler implements CommandHandler<RestoreProductComma
     public Void handle(RestoreProductCommand command) {
         var product = repository.findByIdOrThrow(command.productId());
         product.restore();
-        events.publishEvent(new ProductChanged(product.getId(), product.getSku(), product.getName(), product.isArchived()));
+        events.publishEvent(ProductChanged.from(product));
         return null;
     }
 }

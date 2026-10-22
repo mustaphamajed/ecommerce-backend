@@ -36,7 +36,7 @@ public class UpdateProductHandler implements CommandHandler<UpdateProductCommand
                 command.description(),
                 command.price(),
                 categories.resolve(command.categoryId()));
-        events.publishEvent(new ProductChanged(product.getId(), product.getSku(), product.getName(), product.isArchived()));
+        events.publishEvent(ProductChanged.from(product));
         return null;
     }
 }
