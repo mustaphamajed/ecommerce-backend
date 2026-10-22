@@ -1,12 +1,12 @@
-package com.ecommerce.admin.auth.api;
+package com.ecommerce.admin.user.auth.api;
 
-import com.ecommerce.admin.auth.command.login.LoginCommand;
-import com.ecommerce.admin.auth.command.login.LoginHandler;
-import com.ecommerce.admin.auth.command.refresh.RefreshTokensCommand;
-import com.ecommerce.admin.auth.command.refresh.RefreshTokensHandler;
-import com.ecommerce.admin.auth.domain.AuthTokens;
-import com.ecommerce.admin.auth.query.CurrentUserQueryService;
-import com.ecommerce.admin.auth.query.CurrentUserView;
+import com.ecommerce.admin.user.auth.command.login.LoginCommand;
+import com.ecommerce.admin.user.auth.command.login.LoginHandler;
+import com.ecommerce.admin.user.auth.command.refresh.RefreshTokensCommand;
+import com.ecommerce.admin.user.auth.command.refresh.RefreshTokensHandler;
+import com.ecommerce.admin.user.auth.domain.AuthTokens;
+import com.ecommerce.admin.user.auth.query.CurrentUserQueryService;
+import com.ecommerce.admin.user.auth.query.CurrentUserView;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;

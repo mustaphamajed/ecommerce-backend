@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.api;
+package com.ecommerce.admin.user.auth.api;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,6 +1,6 @@
-package com.ecommerce.admin.auth.api;
+package com.ecommerce.admin.user.auth.api;
 
-import com.ecommerce.admin.auth.domain.IssuedToken;
+import com.ecommerce.admin.user.auth.domain.IssuedToken;
 
 public record TokenResponse(String accessToken, String tokenType, long expiresIn) {
 

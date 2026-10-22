@@ -1,6 +1,6 @@
-package com.ecommerce.admin.auth.domain;
+package com.ecommerce.admin.user.auth.domain;
 
-import com.ecommerce.admin.auth.exception.InvalidRefreshTokenException;
+import com.ecommerce.admin.user.auth.exception.InvalidRefreshTokenException;
 import com.ecommerce.admin.common.security.JwtConfig;
 import com.ecommerce.admin.common.security.JwtProperties;
 import com.ecommerce.admin.common.security.TokenType;

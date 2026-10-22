@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.query;
+package com.ecommerce.admin.user.auth.query;
 
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.role.domain.Role;

@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.command.refresh;
+package com.ecommerce.admin.user.auth.command.refresh;
 
 public record RefreshTokensCommand(String refreshToken) {
 }

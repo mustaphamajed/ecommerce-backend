@@ -1,9 +1,9 @@
-package com.ecommerce.admin.auth.command.login;
+package com.ecommerce.admin.user.auth.command.login;
 
-import com.ecommerce.admin.auth.domain.AuthTokens;
-import com.ecommerce.admin.auth.domain.TokenService;
-import com.ecommerce.admin.auth.exception.AccountDisabledException;
-import com.ecommerce.admin.auth.exception.InvalidCredentialsException;
+import com.ecommerce.admin.user.auth.domain.AuthTokens;
+import com.ecommerce.admin.user.auth.domain.TokenService;
+import com.ecommerce.admin.user.auth.exception.AccountDisabledException;
+import com.ecommerce.admin.user.auth.exception.InvalidCredentialsException;
 import com.ecommerce.admin.common.CommandHandler;
 import com.ecommerce.admin.user.domain.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

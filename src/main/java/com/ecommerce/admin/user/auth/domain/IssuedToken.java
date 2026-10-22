@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.domain;
+package com.ecommerce.admin.user.auth.domain;
 
 import java.time.Duration;
 

@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.query;
+package com.ecommerce.admin.user.auth.query;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.ecommerce.admin.auth.command.login;
+package com.ecommerce.admin.user.auth.command.login;
 
 import java.util.Locale;
 
