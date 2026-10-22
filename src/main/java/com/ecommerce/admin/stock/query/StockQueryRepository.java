@@ -28,7 +28,6 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
              FROM StockMovement m
              JOIN StockProduct p ON p.id = m.productId
              JOIN m.warehouse w
-             LEFT JOIN m.createdBy u
              WHERE (:productId IS NULL OR p.id = :productId)
                AND (:warehouseId IS NULL OR w.id = :warehouseId)
             """;
@@ -36,7 +35,7 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
     @Query(value = """
             SELECT new com.ecommerce.admin.stock.query.StockMovementView(
                 m.id, p.id, p.sku, p.name, w.id, w.code, m.quantityChange, m.reason, m.note,
-                CONCAT(u.firstName, ' ', u.lastName), m.createdAt)
+                m.createdByName, m.createdAt)
             """ + FROM_MOVEMENTS,
             countQuery = "SELECT COUNT(m) " + FROM_MOVEMENTS)
     Page<StockMovementView> findMovements(Long productId, Long warehouseId, Pageable pageable);
@@ -44,11 +43,10 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
     @Query("""
             SELECT new com.ecommerce.admin.stock.query.StockMovementView(
                 m.id, p.id, p.sku, p.name, w.id, w.code, m.quantityChange, m.reason, m.note,
-                CONCAT(u.firstName, ' ', u.lastName), m.createdAt)
+                m.createdByName, m.createdAt)
             FROM StockMovement m
             JOIN StockProduct p ON p.id = m.productId
             JOIN m.warehouse w
-            LEFT JOIN m.createdBy u
             WHERE m.id = :id
             """)
     Optional<StockMovementView> findMovementById(Long id);

@@ -37,3 +37,8 @@ SELECT p.id, p.sku, p.name, c.name, p.status = 'ARCHIVED'
 FROM products p LEFT JOIN categories c ON c.id = p.category_id
 ON CONFLICT (id) DO UPDATE SET sku = EXCLUDED.sku, name = EXCLUDED.name,
     category_name = EXCLUDED.category_name, archived = EXCLUDED.archived;
+
+UPDATE stock_movements m
+SET created_by_name = u.first_name || ' ' || u.last_name
+FROM users u
+WHERE u.id = m.created_by AND m.created_by_name IS NULL;

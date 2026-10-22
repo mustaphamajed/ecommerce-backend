@@ -15,7 +15,6 @@ import com.ecommerce.admin.stock.exception.UnknownStockProductException;
 import com.ecommerce.admin.stock.exception.UnknownWarehouseException;
 import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
 import com.ecommerce.admin.user.ActorLookup;
-import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.time.Instant;
@@ -30,7 +29,6 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
     private final StockMovementRepository movementRepository;
     private final StockProductRepository stockProducts;
     private final WarehouseRepository warehouseRepository;
-    private final UserRepository userRepository;
     private final ActorLookup actors;
     private final StockMetrics metrics;
 
@@ -39,14 +37,12 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
             StockMovementRepository movementRepository,
             StockProductRepository stockProducts,
             WarehouseRepository warehouseRepository,
-            UserRepository userRepository,
             ActorLookup actors,
             StockMetrics metrics) {
         this.stockRepository = stockRepository;
         this.movementRepository = movementRepository;
         this.stockProducts = stockProducts;
         this.warehouseRepository = warehouseRepository;
-        this.userRepository = userRepository;
         this.actors = actors;
         this.metrics = metrics;
     }
@@ -69,7 +65,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
         }
 
         var movement = new StockMovement(
-                product.getId(), warehouse, command.quantityChange(), command.reason(), command.note(), userRepository.getReferenceById(actor.id()));
+                product.getId(), warehouse, command.quantityChange(), command.reason(), command.note(), actor.id(), actor.fullName());
         Long id = movementRepository.save(movement).getId();
         metrics.movementRecorded(command.reason(), command.quantityChange());
         return id;

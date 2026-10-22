@@ -27,8 +27,6 @@ import com.ecommerce.admin.stock.exception.UnknownStockProductException;
 import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
 import com.ecommerce.admin.user.Actor;
 import com.ecommerce.admin.user.ActorLookup;
-import com.ecommerce.admin.user.domain.User;
-import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.Optional;
@@ -63,9 +61,6 @@ class AdjustStockHandlerTest {
     private WarehouseRepository warehouseRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private ActorLookup actors;
 
     @Mock
@@ -76,20 +71,17 @@ class AdjustStockHandlerTest {
 
     private StockProduct stockProduct;
     private Warehouse warehouse;
-    private User actor;
 
     @BeforeEach
     void setUp() {
         stockProduct = new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", null, false);
         warehouse = withId(new Warehouse("PAR", "Paris"), WAREHOUSE_ID);
-        actor = withId(new User("karim@shop.local", "hash", "Karim", "Haddad"), ACTOR_ID);
     }
 
     @Test
     void recordsAValidMovement() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(5), any())).thenReturn(1);
-        when(userRepository.getReferenceById(ACTOR_ID)).thenReturn(actor);
         when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
 
         Long movementId = handler.handle(command(5, MovementReason.PURCHASE));
@@ -104,7 +96,8 @@ class AdjustStockHandlerTest {
         assertThat(saved.getValue().getProductId()).isEqualTo(PRODUCT_ID);
         assertThat(saved.getValue().getQuantityChange()).isEqualTo(5);
         assertThat(saved.getValue().getReason()).isEqualTo(MovementReason.PURCHASE);
-        assertThat(saved.getValue().getCreatedBy()).isSameAs(actor);
+        assertThat(saved.getValue().getCreatedById()).isEqualTo(ACTOR_ID);
+        assertThat(saved.getValue().getCreatedByName()).isEqualTo("Karim Haddad");
         verify(metrics).movementRecorded(MovementReason.PURCHASE, 5);
     }
 

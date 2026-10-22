@@ -1,6 +1,5 @@
 package com.ecommerce.admin.stock.domain;
 
-import com.ecommerce.admin.user.domain.User;
 import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,9 +45,11 @@ public class StockMovement {
     @Column(columnDefinition = "text")
     private String note;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+    @Column(name = "created_by")
+    private Long createdById;
+
+    @Column(name = "created_by_name", length = 201)
+    private String createdByName;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -58,13 +59,14 @@ public class StockMovement {
     }
 
     public StockMovement(Long productId, Warehouse warehouse, int quantityChange,
-            MovementReason reason, String note, User createdBy) {
+            MovementReason reason, String note, Long createdById, String createdByName) {
         this.productId = productId;
         this.warehouse = warehouse;
         this.quantityChange = quantityChange;
         this.reason = reason;
         this.note = note;
-        this.createdBy = createdBy;
+        this.createdById = createdById;
+        this.createdByName = createdByName;
     }
 
     public Long getId() {
@@ -91,8 +93,12 @@ public class StockMovement {
         return note;
     }
 
-    public User getCreatedBy() {
-        return createdBy;
+    public Long getCreatedById() {
+        return createdById;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
     }
 
     public Instant getCreatedAt() {
