@@ -1,10 +1,9 @@
 package com.ecommerce.admin.dashboard.query;
 
 import com.ecommerce.admin.product.ProductStatistics;
-import com.ecommerce.admin.product.domain.ProductStatus;
 import com.ecommerce.admin.role.domain.Permission;
-import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.query.StockQueryService;
+import com.ecommerce.admin.stock.query.WarehouseStockSummary;
 import java.util.Collection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -40,19 +39,10 @@ public class DashboardQueryService {
     }
 
     private StockStats stockStats() {
-        long activeProducts = productStatistics.counts().active();
-        var warehouses = repository.summarizeWarehouses(ProductStatus.ACTIVE, Stock.LOW_STOCK_THRESHOLD).stream()
-                .map(row -> new WarehouseStockSummary(
-                        row.warehouseId(),
-                        row.code(),
-                        row.name(),
-                        row.totalUnits(),
-                        row.lowStockProducts(),
-                        activeProducts - row.inStockProducts()))
-                .toList();
+        var warehouses = stockQueries.summarizeWarehouses();
         long totalUnits = warehouses.stream().mapToLong(WarehouseStockSummary::totalUnits).sum();
         var recentMovements = stockQueries.findMovements(null, null, PageRequest.of(0, RECENT_MOVEMENTS)).content();
-        return new StockStats(totalUnits, Stock.LOW_STOCK_THRESHOLD, warehouses, recentMovements);
+        return new StockStats(totalUnits, StockQueryService.LOW_STOCK_THRESHOLD, warehouses, recentMovements);
     }
 
     private UserStats userStats() {

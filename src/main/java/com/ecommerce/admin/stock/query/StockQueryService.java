@@ -3,8 +3,10 @@ package com.ecommerce.admin.stock.query;
 import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.SearchPatterns;
+import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.exception.UnknownWarehouseException;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
+import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @NamedInterface("queries")
 public class StockQueryService {
+
+    public static final int LOW_STOCK_THRESHOLD = Stock.LOW_STOCK_THRESHOLD;
 
     private static final Set<String> LEVEL_SORTABLE_PROPERTIES = Set.of("name", "sku", "quantity");
 
@@ -48,6 +52,19 @@ public class StockQueryService {
     public StockMovementView findMovement(Long id) {
         return repository.findMovementById(id)
                 .orElseThrow(() -> new IllegalStateException("Movement " + id + " was just created but can't be read"));
+    }
+
+    public List<WarehouseStockSummary> summarizeWarehouses() {
+        long activeProducts = repository.countActiveProducts();
+        return repository.summarizeWarehouses(LOW_STOCK_THRESHOLD).stream()
+                .map(row -> new WarehouseStockSummary(
+                        row.warehouseId(),
+                        row.code(),
+                        row.name(),
+                        row.totalUnits(),
+                        row.lowStockProducts(),
+                        activeProducts - row.inStockProducts()))
+                .toList();
     }
 
     private Pageable toLevelSort(Pageable pageable) {

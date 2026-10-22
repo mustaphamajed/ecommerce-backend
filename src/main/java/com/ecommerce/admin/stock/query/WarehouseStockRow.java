@@ -1,4 +1,4 @@
-package com.ecommerce.admin.dashboard.query;
+package com.ecommerce.admin.stock.query;
 
 public record WarehouseStockRow(
         Long warehouseId,
