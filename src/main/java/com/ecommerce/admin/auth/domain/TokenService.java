@@ -6,7 +6,6 @@ import com.ecommerce.admin.common.security.JwtProperties;
 import com.ecommerce.admin.common.security.TokenType;
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.user.domain.User;
-import com.ecommerce.admin.stock.domain.Warehouse;
 import java.time.Duration;
 import java.time.Instant;
 import javax.crypto.SecretKey;
@@ -50,7 +49,7 @@ public class TokenService {
                 .claim("name", user.getFirstName() + " " + user.getLastName())
                 .claim(JwtConfig.PERMISSIONS_CLAIM,
                         user.getPermissions().stream().map(Permission::authority).sorted().toList())
-                .claim("warehouses", user.getWarehouses().stream().map(Warehouse::getId).sorted().toList())
+                .claim("warehouses", user.getWarehouseIds().stream().sorted().toList())
                 .build();
         return new IssuedToken(encode(claims), properties.accessTokenTtl());
     }

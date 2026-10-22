@@ -32,13 +32,15 @@ public class UserAssignments {
         return roles;
     }
 
-    public Set<Warehouse> resolveWarehouses(Set<Long> warehouseIds) {
-        var warehouses = new HashSet<>(warehouseRepository.findAllById(warehouseIds));
-        if (warehouses.size() != warehouseIds.size()) {
+    public Set<Long> resolveWarehouses(Set<Long> warehouseIds) {
+        var knownIds = warehouseRepository.findAllById(warehouseIds).stream()
+                .map(Warehouse::getId)
+                .collect(Collectors.toSet());
+        if (knownIds.size() != warehouseIds.size()) {
             var unknownIds = new HashSet<>(warehouseIds);
-            unknownIds.removeAll(warehouses.stream().map(Warehouse::getId).collect(Collectors.toSet()));
+            unknownIds.removeAll(knownIds);
             throw new UnknownWarehousesException(unknownIds);
         }
-        return warehouses;
+        return Set.copyOf(warehouseIds);
     }
 }

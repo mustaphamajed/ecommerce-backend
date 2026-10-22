@@ -2,8 +2,9 @@ package com.ecommerce.admin.user.domain;
 
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.role.domain.Role;
-import com.ecommerce.admin.stock.domain.Warehouse;
 import jakarta.persistence.Column;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -52,12 +53,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_warehouses",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "warehouse_id"))
-    private Set<Warehouse> warehouses = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "user_warehouses", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "warehouse_id", nullable = false)
+    private Set<Long> warehouseIds = new HashSet<>();
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -102,9 +101,9 @@ public class User {
         this.roles.addAll(roles);
     }
 
-    public void assignWarehouses(Set<Warehouse> warehouses) {
-        this.warehouses.clear();
-        this.warehouses.addAll(warehouses);
+    public void assignWarehouses(Set<Long> warehouseIds) {
+        this.warehouseIds.clear();
+        this.warehouseIds.addAll(warehouseIds);
     }
 
     public void disable() {
@@ -143,8 +142,8 @@ public class User {
         return Collections.unmodifiableSet(roles);
     }
 
-    public Set<Warehouse> getWarehouses() {
-        return Collections.unmodifiableSet(warehouses);
+    public Set<Long> getWarehouseIds() {
+        return Collections.unmodifiableSet(warehouseIds);
     }
 
     public Instant getCreatedAt() {

@@ -3,7 +3,7 @@ package com.ecommerce.admin.user;
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
-import java.util.stream.Collectors;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +22,10 @@ public class ActorLookup {
     }
 
     private static Actor toActor(User user) {
-        var warehouseIds = user.getWarehouses().stream()
-                .map(warehouse -> warehouse.getId())
-                .collect(Collectors.toUnmodifiableSet());
         return new Actor(
                 user.getId(),
                 user.getFirstName() + " " + user.getLastName(),
                 user.hasRole(Role.ADMIN),
-                warehouseIds);
+                Set.copyOf(user.getWarehouseIds()));
     }
 }

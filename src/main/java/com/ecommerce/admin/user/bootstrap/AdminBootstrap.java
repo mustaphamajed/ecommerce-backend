@@ -2,11 +2,12 @@ package com.ecommerce.admin.user.bootstrap;
 
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.role.domain.RoleRepository;
+import com.ecommerce.admin.stock.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
-import com.ecommerce.admin.stock.domain.WarehouseRepository;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +60,7 @@ public class AdminBootstrap implements ApplicationRunner {
                 .orElseThrow(() -> new IllegalStateException("The ADMIN role is missing, check data.sql"));
         var admin = new User(email, passwordEncoder.encode(password), "Admin", "Admin");
         admin.assignRoles(Set.of(adminRole));
-        admin.assignWarehouses(new HashSet<>(warehouseRepository.findAll()));
+        admin.assignWarehouses(warehouseRepository.findAll().stream().map(Warehouse::getId).collect(Collectors.toSet()));
         userRepository.save(admin);
         log.info("Created the initial admin user {}", admin.getEmail());
     }

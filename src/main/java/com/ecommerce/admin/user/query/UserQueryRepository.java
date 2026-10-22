@@ -40,7 +40,7 @@ public interface UserQueryRepository extends Repository<User, Long> {
 
     @Query("""
             SELECT new com.ecommerce.admin.user.query.UserWarehouseRow(u.id, w.id, w.code, w.name)
-            FROM User u JOIN u.warehouses w
+            FROM User u JOIN u.warehouseIds warehouseId JOIN Warehouse w ON w.id = warehouseId
             WHERE u.id IN :userIds
             ORDER BY w.code
             """)
