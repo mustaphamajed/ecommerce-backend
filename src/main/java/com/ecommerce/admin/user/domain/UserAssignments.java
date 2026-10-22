@@ -1,7 +1,7 @@
 package com.ecommerce.admin.user.domain;
 
+import com.ecommerce.admin.role.RoleLookup;
 import com.ecommerce.admin.role.domain.Role;
-import com.ecommerce.admin.role.domain.RoleRepository;
 import com.ecommerce.admin.user.WarehouseDirectory;
 import com.ecommerce.admin.user.WarehouseSummary;
 import com.ecommerce.admin.user.exception.UnknownRolesException;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserAssignments {
 
-    private final RoleRepository roleRepository;
+    private final RoleLookup roleLookup;
     private final WarehouseDirectory warehouseDirectory;
 
-    public UserAssignments(RoleRepository roleRepository, WarehouseDirectory warehouseDirectory) {
-        this.roleRepository = roleRepository;
+    public UserAssignments(RoleLookup roleLookup, WarehouseDirectory warehouseDirectory) {
+        this.roleLookup = roleLookup;
         this.warehouseDirectory = warehouseDirectory;
     }
 
     public Set<Role> resolveRoles(Set<Long> roleIds) {
-        var roles = new HashSet<>(roleRepository.findAllById(roleIds));
+        var roles = new HashSet<>(roleLookup.findAllById(roleIds));
         if (roles.size() != roleIds.size()) {
             var unknownIds = new HashSet<>(roleIds);
             unknownIds.removeAll(roles.stream().map(Role::getId).collect(Collectors.toSet()));

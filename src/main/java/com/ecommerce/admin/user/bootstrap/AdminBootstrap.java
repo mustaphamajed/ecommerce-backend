@@ -1,7 +1,7 @@
 package com.ecommerce.admin.user.bootstrap;
 
+import com.ecommerce.admin.role.RoleLookup;
 import com.ecommerce.admin.role.domain.Role;
-import com.ecommerce.admin.role.domain.RoleRepository;
 import com.ecommerce.admin.user.WarehouseDirectory;
 import com.ecommerce.admin.user.WarehouseSummary;
 import com.ecommerce.admin.user.domain.User;
@@ -25,7 +25,7 @@ public class AdminBootstrap implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(AdminBootstrap.class);
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleLookup roleLookup;
     private final WarehouseDirectory warehouseDirectory;
     private final PasswordEncoder passwordEncoder;
     private final String email;
@@ -33,13 +33,13 @@ public class AdminBootstrap implements ApplicationRunner {
 
     public AdminBootstrap(
             UserRepository userRepository,
-            RoleRepository roleRepository,
+            RoleLookup roleLookup,
             WarehouseDirectory warehouseDirectory,
             PasswordEncoder passwordEncoder,
             @Value("${app.bootstrap.admin.email}") String email,
             @Value("${app.bootstrap.admin.password}") String password) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleLookup = roleLookup;
         this.warehouseDirectory = warehouseDirectory;
         this.passwordEncoder = passwordEncoder;
         this.email = email;
@@ -56,7 +56,7 @@ public class AdminBootstrap implements ApplicationRunner {
             log.warn("No users exist and no bootstrap admin is configured: nobody can log in");
             return;
         }
-        var adminRole = roleRepository.findByName(Role.ADMIN)
+        var adminRole = roleLookup.findByName(Role.ADMIN)
                 .orElseThrow(() -> new IllegalStateException("The ADMIN role is missing, check data.sql"));
         var admin = new User(email, passwordEncoder.encode(password), "Admin", "Admin");
         admin.assignRoles(Set.of(adminRole));
