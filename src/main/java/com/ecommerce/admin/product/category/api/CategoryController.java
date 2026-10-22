@@ -1,13 +1,13 @@
-package com.ecommerce.admin.category.api;
+package com.ecommerce.admin.product.category.api;
 
-import com.ecommerce.admin.category.command.create.CreateCategoryCommand;
-import com.ecommerce.admin.category.command.create.CreateCategoryHandler;
-import com.ecommerce.admin.category.command.delete.DeleteCategoryCommand;
-import com.ecommerce.admin.category.command.delete.DeleteCategoryHandler;
-import com.ecommerce.admin.category.command.update.UpdateCategoryCommand;
-import com.ecommerce.admin.category.command.update.UpdateCategoryHandler;
-import com.ecommerce.admin.category.query.CategoryQueryService;
-import com.ecommerce.admin.category.query.CategoryView;
+import com.ecommerce.admin.product.category.command.create.CreateCategoryCommand;
+import com.ecommerce.admin.product.category.command.create.CreateCategoryHandler;
+import com.ecommerce.admin.product.category.command.delete.DeleteCategoryCommand;
+import com.ecommerce.admin.product.category.command.delete.DeleteCategoryHandler;
+import com.ecommerce.admin.product.category.command.update.UpdateCategoryCommand;
+import com.ecommerce.admin.product.category.command.update.UpdateCategoryHandler;
+import com.ecommerce.admin.product.category.query.CategoryQueryService;
+import com.ecommerce.admin.product.category.query.CategoryView;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.web.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;

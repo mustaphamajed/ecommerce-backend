@@ -1,4 +1,4 @@
-package com.ecommerce.admin.category.command.create;
+package com.ecommerce.admin.product.category.command.create;
 
 import com.ecommerce.admin.common.Strings;
 

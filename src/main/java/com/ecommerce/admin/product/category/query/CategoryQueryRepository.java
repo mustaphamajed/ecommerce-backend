@@ -1,6 +1,6 @@
-package com.ecommerce.admin.category.query;
+package com.ecommerce.admin.product.category.query;
 
-import com.ecommerce.admin.category.domain.Category;
+import com.ecommerce.admin.product.category.domain.Category;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +10,7 @@ import org.springframework.data.repository.Repository;
 public interface CategoryQueryRepository extends Repository<Category, Long> {
 
     String SELECT_VIEW = """
-            SELECT new com.ecommerce.admin.category.query.CategoryView(
+            SELECT new com.ecommerce.admin.product.category.query.CategoryView(
                 c.id, c.name, c.slug, c.description, COUNT(p), c.createdAt, c.updatedAt)
             FROM Category c
             LEFT JOIN Product p ON p.category = c

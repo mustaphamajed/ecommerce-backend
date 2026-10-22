@@ -1,4 +1,4 @@
-package com.ecommerce.admin.category.query;
+package com.ecommerce.admin.product.category.query;
 
 import java.time.Instant;
 

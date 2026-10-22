@@ -1,4 +1,4 @@
-package com.ecommerce.admin.category.exception;
+package com.ecommerce.admin.product.category.exception;
 
 import com.ecommerce.admin.common.exception.NotFoundException;
 

@@ -1,9 +1,9 @@
 package com.ecommerce.admin.demo;
 
-import com.ecommerce.admin.category.command.create.CreateCategoryCommand;
-import com.ecommerce.admin.category.command.create.CreateCategoryHandler;
-import com.ecommerce.admin.category.domain.Category;
-import com.ecommerce.admin.category.domain.CategoryRepository;
+import com.ecommerce.admin.product.category.command.create.CreateCategoryCommand;
+import com.ecommerce.admin.product.category.command.create.CreateCategoryHandler;
+import com.ecommerce.admin.product.category.domain.Category;
+import com.ecommerce.admin.product.category.domain.CategoryRepository;
 import com.ecommerce.admin.product.command.archive.ArchiveProductCommand;
 import com.ecommerce.admin.product.command.archive.ArchiveProductHandler;
 import com.ecommerce.admin.product.command.create.CreateProductCommand;

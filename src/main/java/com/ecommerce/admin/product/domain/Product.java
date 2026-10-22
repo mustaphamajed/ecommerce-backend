@@ -1,6 +1,6 @@
 package com.ecommerce.admin.product.domain;
 
-import com.ecommerce.admin.category.domain.Category;
+import com.ecommerce.admin.product.category.domain.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

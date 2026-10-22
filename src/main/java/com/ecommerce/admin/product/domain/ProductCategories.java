@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.domain;
 
-import com.ecommerce.admin.category.domain.Category;
-import com.ecommerce.admin.category.domain.CategoryRepository;
+import com.ecommerce.admin.product.category.domain.Category;
+import com.ecommerce.admin.product.category.domain.CategoryRepository;
 import com.ecommerce.admin.product.exception.UnknownCategoryException;
 import org.springframework.stereotype.Component;
 

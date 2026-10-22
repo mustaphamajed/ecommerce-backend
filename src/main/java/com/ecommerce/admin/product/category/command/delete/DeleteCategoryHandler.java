@@ -1,7 +1,7 @@
-package com.ecommerce.admin.category.command.delete;
+package com.ecommerce.admin.product.category.command.delete;
 
-import com.ecommerce.admin.category.domain.CategoryRepository;
-import com.ecommerce.admin.category.exception.CategoryInUseException;
+import com.ecommerce.admin.product.category.domain.CategoryRepository;
+import com.ecommerce.admin.product.category.exception.CategoryInUseException;
 import com.ecommerce.admin.common.CommandHandler;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;

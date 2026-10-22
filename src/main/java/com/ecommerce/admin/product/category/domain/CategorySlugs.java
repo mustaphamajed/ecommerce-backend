@@ -1,6 +1,6 @@
-package com.ecommerce.admin.category.domain;
+package com.ecommerce.admin.product.category.domain;
 
-import com.ecommerce.admin.category.exception.CategorySlugRequiredException;
+import com.ecommerce.admin.product.category.exception.CategorySlugRequiredException;
 import com.ecommerce.admin.common.Slugs;
 
 public final class CategorySlugs {

@@ -1,4 +1,4 @@
-package com.ecommerce.admin.category.command.update;
+package com.ecommerce.admin.product.category.command.update;
 
 import com.ecommerce.admin.common.Strings;
 

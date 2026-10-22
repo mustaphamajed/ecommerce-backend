@@ -1,6 +1,6 @@
-package com.ecommerce.admin.category.domain;
+package com.ecommerce.admin.product.category.domain;
 
-import com.ecommerce.admin.category.exception.CategoryNotFoundException;
+import com.ecommerce.admin.product.category.exception.CategoryNotFoundException;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

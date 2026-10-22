@@ -1,6 +1,6 @@
-package com.ecommerce.admin.category.query;
+package com.ecommerce.admin.product.category.query;
 
-import com.ecommerce.admin.category.exception.CategoryNotFoundException;
+import com.ecommerce.admin.product.category.exception.CategoryNotFoundException;
 import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.SearchPatterns;
