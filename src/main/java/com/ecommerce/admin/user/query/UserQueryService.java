@@ -1,5 +1,6 @@
 package com.ecommerce.admin.user.query;
 
+import com.ecommerce.admin.user.WarehouseSummary;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;

@@ -1,5 +1,6 @@
 package com.ecommerce.admin.user.query;
 
+import com.ecommerce.admin.user.WarehouseSummary;
 import java.time.Instant;
 import java.util.List;
 
