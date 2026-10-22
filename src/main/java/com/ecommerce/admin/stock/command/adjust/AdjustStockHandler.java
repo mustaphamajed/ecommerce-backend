@@ -8,12 +8,13 @@ import com.ecommerce.admin.stock.domain.StockMovementRepository;
 import com.ecommerce.admin.stock.domain.StockProduct;
 import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
-import com.ecommerce.admin.stock.domain.WarehouseAccess;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
 import com.ecommerce.admin.stock.exception.InvalidMovementException;
 import com.ecommerce.admin.stock.exception.ProductArchivedException;
 import com.ecommerce.admin.stock.exception.UnknownStockProductException;
 import com.ecommerce.admin.stock.exception.UnknownWarehouseException;
+import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
+import com.ecommerce.admin.user.ActorLookup;
 import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
@@ -30,7 +31,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
     private final StockProductRepository stockProducts;
     private final WarehouseRepository warehouseRepository;
     private final UserRepository userRepository;
-    private final WarehouseAccess warehouseAccess;
+    private final ActorLookup actors;
     private final StockMetrics metrics;
 
     public AdjustStockHandler(
@@ -39,14 +40,14 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
             StockProductRepository stockProducts,
             WarehouseRepository warehouseRepository,
             UserRepository userRepository,
-            WarehouseAccess warehouseAccess,
+            ActorLookup actors,
             StockMetrics metrics) {
         this.stockRepository = stockRepository;
         this.movementRepository = movementRepository;
         this.stockProducts = stockProducts;
         this.warehouseRepository = warehouseRepository;
         this.userRepository = userRepository;
-        this.warehouseAccess = warehouseAccess;
+        this.actors = actors;
         this.metrics = metrics;
     }
 
@@ -55,8 +56,10 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
         validateMovement(command);
         var product = findActiveProduct(command.productId());
         var warehouse = findWarehouse(command.warehouseId());
-        var actor = userRepository.findByIdOrThrow(command.actorId());
-        warehouseAccess.ensureCanAdjust(actor, warehouse);
+        var actor = actors.find(command.actorId());
+        if (!actor.canWorkIn(warehouse.getId())) {
+            throw new WarehouseAccessDeniedException(warehouse.getCode());
+        }
 
         var now = Instant.now();
         stockRepository.createIfMissing(product.getId(), warehouse.getId(), now);
@@ -66,7 +69,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
         }
 
         var movement = new StockMovement(
-                product.getId(), warehouse, command.quantityChange(), command.reason(), command.note(), actor);
+                product.getId(), warehouse, command.quantityChange(), command.reason(), command.note(), userRepository.getReferenceById(actor.id()));
         Long id = movementRepository.save(movement).getId();
         metrics.movementRecorded(command.reason(), command.quantityChange());
         return id;

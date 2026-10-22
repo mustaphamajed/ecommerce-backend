@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,17 +20,19 @@ import com.ecommerce.admin.stock.domain.StockMovementRepository;
 import com.ecommerce.admin.stock.domain.StockProduct;
 import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
-import com.ecommerce.admin.stock.domain.WarehouseAccess;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
 import com.ecommerce.admin.stock.exception.InvalidMovementException;
 import com.ecommerce.admin.stock.exception.ProductArchivedException;
 import com.ecommerce.admin.stock.exception.UnknownStockProductException;
 import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
+import com.ecommerce.admin.user.Actor;
+import com.ecommerce.admin.user.ActorLookup;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +66,7 @@ class AdjustStockHandlerTest {
     private UserRepository userRepository;
 
     @Mock
-    private WarehouseAccess warehouseAccess;
+    private ActorLookup actors;
 
     @Mock
     private StockMetrics metrics;
@@ -88,6 +89,7 @@ class AdjustStockHandlerTest {
     void recordsAValidMovement() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(5), any())).thenReturn(1);
+        when(userRepository.getReferenceById(ACTOR_ID)).thenReturn(actor);
         when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
 
         Long movementId = handler.handle(command(5, MovementReason.PURCHASE));
@@ -145,8 +147,7 @@ class AdjustStockHandlerTest {
 
     @Test
     void rejectsAWarehouseTheActorIsNotAssignedTo() {
-        givenProductWarehouseAndActorExist();
-        doThrow(new WarehouseAccessDeniedException("PAR")).when(warehouseAccess).ensureCanAdjust(actor, warehouse);
+        givenProductWarehouseAnd(new Actor(ACTOR_ID, "Karim Haddad", false, Set.of(99L)));
 
         assertThatThrownBy(() -> handler.handle(command(5, MovementReason.PURCHASE)))
                 .isInstanceOf(WarehouseAccessDeniedException.class);
@@ -171,9 +172,13 @@ class AdjustStockHandlerTest {
     }
 
     private void givenProductWarehouseAndActorExist() {
+        givenProductWarehouseAnd(new Actor(ACTOR_ID, "Karim Haddad", false, Set.of(WAREHOUSE_ID)));
+    }
+
+    private void givenProductWarehouseAnd(Actor actor) {
         when(stockProducts.findById(PRODUCT_ID)).thenReturn(Optional.of(stockProduct));
         when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(warehouse));
-        when(userRepository.findByIdOrThrow(ACTOR_ID)).thenReturn(actor);
+        when(actors.find(ACTOR_ID)).thenReturn(actor);
     }
 
     private static AdjustStockCommand command(int quantityChange, MovementReason reason) {
