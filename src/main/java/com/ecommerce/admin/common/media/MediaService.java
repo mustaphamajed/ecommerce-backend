@@ -2,14 +2,13 @@ package com.ecommerce.admin.common.media;
 
 import com.ecommerce.admin.common.storage.ObjectStorage;
 import com.ecommerce.admin.common.storage.StoredObject;
+import com.ecommerce.admin.common.transaction.TransactionCallbacks;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class MediaService {
@@ -21,30 +20,23 @@ public class MediaService {
     private static final Pattern SAFE_KEY = Pattern.compile("^[a-z0-9-]+(/[A-Za-z0-9-]+)*/[0-9a-f-]{36}\\.(jpg|png|webp)$");
 
     private final ObjectStorage storage;
+    private final MediaMetrics metrics;
 
-    public MediaService(ObjectStorage storage) {
+    public MediaService(ObjectStorage storage, MediaMetrics metrics) {
         this.storage = storage;
+        this.metrics = metrics;
     }
 
     public String uploadImage(String folder, byte[] content) {
-        var type = validateImage(content);
+        var type = validateImage(folder, content);
         String key = folder + "/" + UUID.randomUUID() + "." + type.extension();
-        storage.put(key, content, type.contentType());
-        runOnRollback(() -> deleteQuietly(key));
+        metrics.timeUpload(folder, type, () -> storage.put(key, content, type.contentType()));
+        TransactionCallbacks.afterRollback(() -> deleteQuietly(key));
         return key;
     }
 
     public void deleteAfterCommit(String key) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    deleteQuietly(key);
-                }
-            });
-        } else {
-            deleteQuietly(key);
-        }
+        TransactionCallbacks.afterCommit(() -> deleteQuietly(key));
     }
 
     public StoredObject load(String key) {
@@ -62,27 +54,19 @@ public class MediaService {
         return key.map(MediaService::urlOf);
     }
 
-    private static ImageType validateImage(byte[] content) {
+    private ImageType validateImage(String folder, byte[] content) {
         if (content.length == 0) {
+            metrics.uploadRejected(folder, "empty");
             throw InvalidImageException.empty();
         }
         if (content.length > MAX_IMAGE_SIZE_BYTES) {
+            metrics.uploadRejected(folder, "too_large");
             throw InvalidImageException.tooLarge(MAX_IMAGE_SIZE_BYTES);
         }
-        return ImageType.detect(content).orElseThrow(InvalidImageException::unsupportedType);
-    }
-
-    private void runOnRollback(Runnable action) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCompletion(int status) {
-                    if (status == STATUS_ROLLED_BACK) {
-                        action.run();
-                    }
-                }
-            });
-        }
+        return ImageType.detect(content).orElseThrow(() -> {
+            metrics.uploadRejected(folder, "unsupported_type");
+            return InvalidImageException.unsupportedType();
+        });
     }
 
     private void deleteQuietly(String key) {

@@ -3,6 +3,7 @@ package com.ecommerce.admin.stock.command.adjust;
 import com.ecommerce.admin.common.CommandHandler;
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.domain.ProductRepository;
+import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.domain.StockMovement;
 import com.ecommerce.admin.stock.domain.StockMovementRepository;
@@ -30,6 +31,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
     private final WarehouseRepository warehouseRepository;
     private final UserRepository userRepository;
     private final WarehouseAccess warehouseAccess;
+    private final StockMetrics metrics;
 
     public AdjustStockHandler(
             StockRepository stockRepository,
@@ -37,13 +39,15 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
             ProductRepository productRepository,
             WarehouseRepository warehouseRepository,
             UserRepository userRepository,
-            WarehouseAccess warehouseAccess) {
+            WarehouseAccess warehouseAccess,
+            StockMetrics metrics) {
         this.stockRepository = stockRepository;
         this.movementRepository = movementRepository;
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.userRepository = userRepository;
         this.warehouseAccess = warehouseAccess;
+        this.metrics = metrics;
     }
 
     @Override
@@ -63,7 +67,9 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
 
         var movement = new StockMovement(
                 product, warehouse, command.quantityChange(), command.reason(), command.note(), actor);
-        return movementRepository.save(movement).getId();
+        Long id = movementRepository.save(movement).getId();
+        metrics.movementRecorded(command.reason(), command.quantityChange());
+        return id;
     }
 
     private void validateMovement(AdjustStockCommand command) {
