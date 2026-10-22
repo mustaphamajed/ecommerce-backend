@@ -10,5 +10,6 @@ public record CatalogProductView(
         BigDecimal price,
         String categoryName,
         String categorySlug,
-        String imageUrl) {
+        String imageUrl,
+        boolean inStock) {
 }
