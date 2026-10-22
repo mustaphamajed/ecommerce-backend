@@ -27,7 +27,7 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
 
     String FROM_MOVEMENTS = """
              FROM StockMovement m
-             JOIN m.product p
+             JOIN StockProduct p ON p.id = m.productId
              JOIN m.warehouse w
              LEFT JOIN m.createdBy u
              WHERE (:productId IS NULL OR p.id = :productId)
@@ -47,7 +47,7 @@ public interface StockQueryRepository extends Repository<Stock, Long> {
                 m.id, p.id, p.sku, p.name, w.id, w.code, m.quantityChange, m.reason, m.note,
                 CONCAT(u.firstName, ' ', u.lastName), m.createdAt)
             FROM StockMovement m
-            JOIN m.product p
+            JOIN StockProduct p ON p.id = m.productId
             JOIN m.warehouse w
             LEFT JOIN m.createdBy u
             WHERE m.id = :id

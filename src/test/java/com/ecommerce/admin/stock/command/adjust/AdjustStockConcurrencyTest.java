@@ -84,7 +84,7 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
         assertThat(stock.findByProductIdAndWarehouseId(productId, warehouse.getId()))
                 .hasValueSatisfying(level -> assertThat(level.getQuantity()).isZero());
         assertThat(movements.findAll())
-                .filteredOn(movement -> movement.getProduct().getId().equals(productId))
+                .filteredOn(movement -> movement.getProductId().equals(productId))
                 .hasSize(1 + INITIAL_STOCK);
     }
 }

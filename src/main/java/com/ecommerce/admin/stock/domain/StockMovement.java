@@ -1,6 +1,5 @@
 package com.ecommerce.admin.stock.domain;
 
-import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.warehouse.domain.Warehouse;
 import jakarta.persistence.CheckConstraint;
@@ -30,9 +29,8 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "warehouse_id", nullable = false)
@@ -60,9 +58,9 @@ public class StockMovement {
     protected StockMovement() {
     }
 
-    public StockMovement(Product product, Warehouse warehouse, int quantityChange,
+    public StockMovement(Long productId, Warehouse warehouse, int quantityChange,
             MovementReason reason, String note, User createdBy) {
-        this.product = product;
+        this.productId = productId;
         this.warehouse = warehouse;
         this.quantityChange = quantityChange;
         this.reason = reason;
@@ -74,8 +72,8 @@ public class StockMovement {
         return id;
     }
 
-    public Product getProduct() {
-        return product;
+    public Long getProductId() {
+        return productId;
     }
 
     public Warehouse getWarehouse() {

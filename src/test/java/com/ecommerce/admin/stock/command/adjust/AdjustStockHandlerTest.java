@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.ecommerce.admin.product.domain.Product;
-import com.ecommerce.admin.product.domain.ProductRepository;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.Stock;
@@ -62,9 +61,6 @@ class AdjustStockHandlerTest {
     private StockProductRepository stockProducts;
 
     @Mock
-    private ProductRepository productRepository;
-
-    @Mock
     private WarehouseRepository warehouseRepository;
 
     @Mock
@@ -96,7 +92,6 @@ class AdjustStockHandlerTest {
     void recordsAValidMovement() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(5), any())).thenReturn(1);
-        when(productRepository.getReferenceById(PRODUCT_ID)).thenReturn(product);
         when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
 
         Long movementId = handler.handle(command(5, MovementReason.PURCHASE));
@@ -108,6 +103,7 @@ class AdjustStockHandlerTest {
 
         var saved = ArgumentCaptor.forClass(StockMovement.class);
         verify(movementRepository).save(saved.capture());
+        assertThat(saved.getValue().getProductId()).isEqualTo(PRODUCT_ID);
         assertThat(saved.getValue().getQuantityChange()).isEqualTo(5);
         assertThat(saved.getValue().getReason()).isEqualTo(MovementReason.PURCHASE);
         assertThat(saved.getValue().getCreatedBy()).isSameAs(actor);
