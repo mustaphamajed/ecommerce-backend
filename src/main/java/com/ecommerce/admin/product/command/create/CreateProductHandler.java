@@ -1,11 +1,13 @@
 package com.ecommerce.admin.product.command.create;
 
 import com.ecommerce.admin.common.CommandHandler;
+import com.ecommerce.admin.product.ProductChanged;
 import com.ecommerce.admin.product.ProductMetrics;
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.domain.ProductCategories;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import com.ecommerce.admin.product.exception.DuplicateSkuException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +18,17 @@ public class CreateProductHandler implements CommandHandler<CreateProductCommand
     private final ProductRepository repository;
     private final ProductCategories categories;
     private final ProductMetrics metrics;
+    private final ApplicationEventPublisher events;
 
-    public CreateProductHandler(ProductRepository repository, ProductCategories categories, ProductMetrics metrics) {
+    public CreateProductHandler(
+            ProductRepository repository,
+            ProductCategories categories,
+            ProductMetrics metrics,
+            ApplicationEventPublisher events) {
         this.repository = repository;
         this.categories = categories;
         this.metrics = metrics;
+        this.events = events;
     }
 
     @Override
@@ -36,6 +44,7 @@ public class CreateProductHandler implements CommandHandler<CreateProductCommand
                 categories.resolve(command.categoryId()));
         Long id = repository.save(product).getId();
         metrics.productCreated();
+        events.publishEvent(new ProductChanged(id, product.getSku(), product.getName(), product.isArchived()));
         return id;
     }
 }
