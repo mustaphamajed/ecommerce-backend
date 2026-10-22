@@ -11,7 +11,8 @@ public enum Permission {
     USER_READ("user:read"),
     USER_MANAGE("user:manage"),
     ROLE_MANAGE("role:manage"),
-    AUDIT_READ("audit:read");
+    AUDIT_READ("audit:read"),
+    SYSTEM_MONITOR("system:monitor");
 
     private final String authority;
 

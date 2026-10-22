@@ -2,6 +2,8 @@
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_categories_name_lower ON categories (lower(name));
 
+ALTER TABLE role_permissions DROP CONSTRAINT IF EXISTS role_permissions_permission_check;
+
 INSERT INTO roles (name, description, built_in) VALUES
     ('ADMIN',         'Full access',                            true),
     ('STOCK_MANAGER', 'Manages stock in assigned warehouses',   true),
@@ -16,6 +18,7 @@ JOIN (VALUES
     ('ADMIN', 'STOCK_READ'),   ('ADMIN', 'STOCK_ADJUST'),
     ('ADMIN', 'USER_READ'),    ('ADMIN', 'USER_MANAGE'),
     ('ADMIN', 'ROLE_MANAGE'),  ('ADMIN', 'AUDIT_READ'),
+    ('ADMIN', 'SYSTEM_MONITOR'),
 
     ('STOCK_MANAGER', 'PRODUCT_READ'),
     ('STOCK_MANAGER', 'STOCK_READ'),

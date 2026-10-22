@@ -32,6 +32,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/media/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/liveness",
+                                "/actuator/health/readiness")
+                        .permitAll()
+                        .requestMatchers("/actuator/**").hasAuthority("system:monitor")
                         .requestMatchers(HttpMethod.GET, "/api/stock/**").hasAuthority("stock:read")
                         .requestMatchers(HttpMethod.POST, "/api/stock/adjustments").hasAuthority("stock:adjust")
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAuthority("product:read")
