@@ -20,6 +20,8 @@ import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.domain.StockMovement;
 import com.ecommerce.admin.stock.domain.StockMovementRepository;
+import com.ecommerce.admin.stock.domain.StockProduct;
+import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
 import com.ecommerce.admin.stock.domain.WarehouseAccess;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
@@ -57,6 +59,9 @@ class AdjustStockHandlerTest {
     private StockMovementRepository movementRepository;
 
     @Mock
+    private StockProductRepository stockProducts;
+
+    @Mock
     private ProductRepository productRepository;
 
     @Mock
@@ -74,12 +79,14 @@ class AdjustStockHandlerTest {
     @InjectMocks
     private AdjustStockHandler handler;
 
+    private StockProduct stockProduct;
     private Product product;
     private Warehouse warehouse;
     private User actor;
 
     @BeforeEach
     void setUp() {
+        stockProduct = new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", false);
         product = withId(new Product("SHOE-001", "Running shoe", null, new BigDecimal("59.90"), null), PRODUCT_ID);
         warehouse = withId(new Warehouse("PAR", "Paris"), WAREHOUSE_ID);
         actor = withId(new User("karim@shop.local", "hash", "Karim", "Haddad"), ACTOR_ID);
@@ -89,6 +96,7 @@ class AdjustStockHandlerTest {
     void recordsAValidMovement() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(5), any())).thenReturn(1);
+        when(productRepository.getReferenceById(PRODUCT_ID)).thenReturn(product);
         when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
 
         Long movementId = handler.handle(command(5, MovementReason.PURCHASE));
@@ -111,7 +119,7 @@ class AdjustStockHandlerTest {
         assertThatThrownBy(() -> handler.handle(command(5, MovementReason.SALE)))
                 .isInstanceOf(InvalidMovementException.class);
 
-        verifyNoInteractions(productRepository, stockRepository, movementRepository, metrics);
+        verifyNoInteractions(stockProducts, stockRepository, movementRepository, metrics);
     }
 
     @Test
@@ -124,7 +132,7 @@ class AdjustStockHandlerTest {
 
     @Test
     void rejectsAnUnknownProduct() {
-        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.empty());
+        when(stockProducts.findById(PRODUCT_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> handler.handle(command(5, MovementReason.PURCHASE)))
                 .isInstanceOf(UnknownStockProductException.class);
@@ -134,8 +142,8 @@ class AdjustStockHandlerTest {
 
     @Test
     void rejectsAnArchivedProduct() {
-        product.archive();
-        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(product));
+        when(stockProducts.findById(PRODUCT_ID))
+                .thenReturn(Optional.of(new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", true)));
 
         assertThatThrownBy(() -> handler.handle(command(5, MovementReason.PURCHASE)))
                 .isInstanceOf(ProductArchivedException.class);
@@ -171,7 +179,7 @@ class AdjustStockHandlerTest {
     }
 
     private void givenProductWarehouseAndActorExist() {
-        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(product));
+        when(stockProducts.findById(PRODUCT_ID)).thenReturn(Optional.of(stockProduct));
         when(warehouseRepository.findById(WAREHOUSE_ID)).thenReturn(Optional.of(warehouse));
         when(userRepository.findByIdOrThrow(ACTOR_ID)).thenReturn(actor);
     }

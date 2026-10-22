@@ -3,8 +3,8 @@ package com.ecommerce.admin.stock.command.adjust;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ecommerce.admin.IntegrationTest;
-import com.ecommerce.admin.product.domain.Product;
-import com.ecommerce.admin.product.domain.ProductRepository;
+import com.ecommerce.admin.product.command.create.CreateProductCommand;
+import com.ecommerce.admin.product.command.create.CreateProductHandler;
 import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.StockMovementRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
@@ -30,7 +30,7 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
     private AdjustStockHandler handler;
 
     @Autowired
-    private ProductRepository products;
+    private CreateProductHandler createProduct;
 
     @Autowired
     private WarehouseRepository warehouses;
@@ -49,13 +49,14 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
 
     @Test
     void parallelSalesNeverSellMoreThanTheStock() throws Exception {
-        var product = products.save(new Product("CONC-001", "Concurrency test", null, BigDecimal.TEN, null));
+        Long productId = createProduct.handle(
+                new CreateProductCommand("CONC-001", "Concurrency test", null, BigDecimal.TEN, null));
         var warehouse = warehouses.save(new Warehouse("CONC", "Concurrency warehouse"));
         Long adminId = users.findByEmail(adminEmail).orElseThrow().getId();
         handler.handle(new AdjustStockCommand(
-                product.getId(), warehouse.getId(), INITIAL_STOCK, MovementReason.PURCHASE, null, adminId));
+                productId, warehouse.getId(), INITIAL_STOCK, MovementReason.PURCHASE, null, adminId));
 
-        var sale = new AdjustStockCommand(product.getId(), warehouse.getId(), -1, MovementReason.SALE, null, adminId);
+        var sale = new AdjustStockCommand(productId, warehouse.getId(), -1, MovementReason.SALE, null, adminId);
         var startSignal = new CountDownLatch(1);
         long successfulSales;
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
@@ -80,10 +81,10 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
         }
 
         assertThat(successfulSales).isEqualTo(INITIAL_STOCK);
-        assertThat(stock.findByProductIdAndWarehouseId(product.getId(), warehouse.getId()))
+        assertThat(stock.findByProductIdAndWarehouseId(productId, warehouse.getId()))
                 .hasValueSatisfying(level -> assertThat(level.getQuantity()).isZero());
         assertThat(movements.findAll())
-                .filteredOn(movement -> movement.getProduct().getId().equals(product.getId()))
+                .filteredOn(movement -> movement.getProduct().getId().equals(productId))
                 .hasSize(1 + INITIAL_STOCK);
     }
 }

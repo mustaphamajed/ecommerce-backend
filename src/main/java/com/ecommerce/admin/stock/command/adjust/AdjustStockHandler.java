@@ -1,12 +1,13 @@
 package com.ecommerce.admin.stock.command.adjust;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.domain.StockMovement;
 import com.ecommerce.admin.stock.domain.StockMovementRepository;
+import com.ecommerce.admin.stock.domain.StockProduct;
+import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
 import com.ecommerce.admin.stock.domain.WarehouseAccess;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
@@ -27,6 +28,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
 
     private final StockRepository stockRepository;
     private final StockMovementRepository movementRepository;
+    private final StockProductRepository stockProducts;
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
     private final UserRepository userRepository;
@@ -36,6 +38,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
     public AdjustStockHandler(
             StockRepository stockRepository,
             StockMovementRepository movementRepository,
+            StockProductRepository stockProducts,
             ProductRepository productRepository,
             WarehouseRepository warehouseRepository,
             UserRepository userRepository,
@@ -43,6 +46,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
             StockMetrics metrics) {
         this.stockRepository = stockRepository;
         this.movementRepository = movementRepository;
+        this.stockProducts = stockProducts;
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.userRepository = userRepository;
@@ -66,7 +70,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
         }
 
         var movement = new StockMovement(
-                product, warehouse, command.quantityChange(), command.reason(), command.note(), actor);
+                productRepository.getReferenceById(product.getId()), warehouse, command.quantityChange(), command.reason(), command.note(), actor);
         Long id = movementRepository.save(movement).getId();
         metrics.movementRecorded(command.reason(), command.quantityChange());
         return id;
@@ -81,8 +85,8 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
         }
     }
 
-    private Product findActiveProduct(Long productId) {
-        var product = productRepository.findById(productId)
+    private StockProduct findActiveProduct(Long productId) {
+        var product = stockProducts.findById(productId)
                 .orElseThrow(() -> new UnknownStockProductException(productId));
         if (product.isArchived()) {
             throw new ProductArchivedException(product.getSku());
@@ -95,7 +99,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
                 .orElseThrow(() -> new UnknownWarehouseException(warehouseId));
     }
 
-    private int availableQuantity(Product product, Warehouse warehouse) {
+    private int availableQuantity(StockProduct product, Warehouse warehouse) {
         return stockRepository.findByProductIdAndWarehouseId(product.getId(), warehouse.getId())
                 .map(Stock::getQuantity)
                 .orElse(0);
