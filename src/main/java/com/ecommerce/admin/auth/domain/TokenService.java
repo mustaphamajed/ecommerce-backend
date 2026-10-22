@@ -6,7 +6,7 @@ import com.ecommerce.admin.common.security.JwtProperties;
 import com.ecommerce.admin.common.security.TokenType;
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.user.domain.User;
-import com.ecommerce.admin.warehouse.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.Warehouse;
 import java.time.Duration;
 import java.time.Instant;
 import javax.crypto.SecretKey;

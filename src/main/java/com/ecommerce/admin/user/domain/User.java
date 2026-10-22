@@ -2,7 +2,7 @@ package com.ecommerce.admin.user.domain;
 
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.role.domain.Role;
-import com.ecommerce.admin.warehouse.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.Warehouse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

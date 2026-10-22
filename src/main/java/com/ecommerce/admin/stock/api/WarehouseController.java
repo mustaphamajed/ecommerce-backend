@@ -1,7 +1,7 @@
-package com.ecommerce.admin.warehouse.api;
+package com.ecommerce.admin.stock.api;
 
-import com.ecommerce.admin.warehouse.query.WarehouseQueryService;
-import com.ecommerce.admin.warehouse.query.WarehouseView;
+import com.ecommerce.admin.stock.query.WarehouseQueryService;
+import com.ecommerce.admin.stock.query.WarehouseView;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;

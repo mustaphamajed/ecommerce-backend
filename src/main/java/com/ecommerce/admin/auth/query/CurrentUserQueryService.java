@@ -3,7 +3,7 @@ package com.ecommerce.admin.auth.query;
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.user.domain.UserRepository;
-import com.ecommerce.admin.warehouse.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.Warehouse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

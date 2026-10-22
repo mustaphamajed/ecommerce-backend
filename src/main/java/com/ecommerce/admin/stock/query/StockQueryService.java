@@ -4,7 +4,7 @@ import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.SearchPatterns;
 import com.ecommerce.admin.stock.exception.UnknownWarehouseException;
-import com.ecommerce.admin.warehouse.domain.WarehouseRepository;
+import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.Set;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

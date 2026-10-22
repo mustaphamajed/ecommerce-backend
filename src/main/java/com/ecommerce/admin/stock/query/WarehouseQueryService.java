@@ -1,6 +1,6 @@
-package com.ecommerce.admin.warehouse.query;
+package com.ecommerce.admin.stock.query;
 
-import com.ecommerce.admin.warehouse.domain.WarehouseRepository;
+import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

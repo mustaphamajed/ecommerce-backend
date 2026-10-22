@@ -1,7 +1,6 @@
 package com.ecommerce.admin.stock.domain;
 
 import com.ecommerce.admin.user.domain.User;
-import com.ecommerce.admin.warehouse.domain.Warehouse;
 import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

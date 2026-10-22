@@ -3,7 +3,6 @@ package com.ecommerce.admin.stock.domain;
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
 import com.ecommerce.admin.user.domain.User;
-import com.ecommerce.admin.warehouse.domain.Warehouse;
 import org.springframework.stereotype.Component;
 
 @Component

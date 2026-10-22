@@ -4,7 +4,7 @@ import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.role.domain.RoleRepository;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
-import com.ecommerce.admin.warehouse.domain.WarehouseRepository;
+import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.HashSet;
 import java.util.Set;
 import org.slf4j.Logger;

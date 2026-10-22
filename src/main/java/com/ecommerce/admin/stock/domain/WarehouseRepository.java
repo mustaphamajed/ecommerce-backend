@@ -1,4 +1,4 @@
-package com.ecommerce.admin.warehouse.domain;
+package com.ecommerce.admin.stock.domain;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

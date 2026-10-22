@@ -1,6 +1,6 @@
-package com.ecommerce.admin.warehouse.query;
+package com.ecommerce.admin.stock.query;
 
-import com.ecommerce.admin.warehouse.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.Warehouse;
 
 public record WarehouseView(Long id, String code, String name) {
 
