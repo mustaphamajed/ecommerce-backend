@@ -1,8 +1,10 @@
 package com.ecommerce.admin.product.command.archive;
 
 import com.ecommerce.admin.common.CommandHandler;
+import com.ecommerce.admin.product.ProductChanged;
 import com.ecommerce.admin.product.ProductMetrics;
 import com.ecommerce.admin.product.domain.ProductRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,16 +14,21 @@ public class ArchiveProductHandler implements CommandHandler<ArchiveProductComma
 
     private final ProductRepository repository;
     private final ProductMetrics metrics;
+    private final ApplicationEventPublisher events;
 
-    public ArchiveProductHandler(ProductRepository repository, ProductMetrics metrics) {
+    public ArchiveProductHandler(
+            ProductRepository repository, ProductMetrics metrics, ApplicationEventPublisher events) {
         this.repository = repository;
         this.metrics = metrics;
+        this.events = events;
     }
 
     @Override
     public Void handle(ArchiveProductCommand command) {
-        repository.findByIdOrThrow(command.productId()).archive();
+        var product = repository.findByIdOrThrow(command.productId());
+        product.archive();
         metrics.productArchived();
+        events.publishEvent(new ProductChanged(product.getId(), product.getSku(), product.getName(), product.isArchived()));
         return null;
     }
 }
