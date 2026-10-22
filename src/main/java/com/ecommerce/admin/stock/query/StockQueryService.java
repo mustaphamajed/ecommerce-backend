@@ -10,11 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.modulith.NamedInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@NamedInterface("queries")
 public class StockQueryService {
 
     private static final Set<String> LEVEL_SORTABLE_PROPERTIES = Set.of("name", "sku", "quantity");

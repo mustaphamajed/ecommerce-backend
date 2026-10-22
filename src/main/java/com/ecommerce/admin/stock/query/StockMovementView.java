@@ -2,7 +2,9 @@ package com.ecommerce.admin.stock.query;
 
 import com.ecommerce.admin.stock.domain.MovementReason;
 import java.time.Instant;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface("queries")
 public record StockMovementView(
         Long id,
         Long productId,
