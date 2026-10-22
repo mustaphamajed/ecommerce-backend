@@ -2,15 +2,13 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
-# Copy only what's needed to download dependencies first:
-# this layer stays cached until pom.xml changes → much faster rebuilds
+# The cache mount keeps ~/.m2 between builds: Maven and the dependencies are downloaded once,
+# even when pom.xml changes
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
-RUN ./mvnw dependency:go-offline -B
-
 COPY .git .git
 COPY src src
-RUN ./mvnw package -DskipTests -B
+RUN --mount=type=cache,target=/root/.m2 ./mvnw package -DskipTests -B
 
 # ---- Run stage: only the JRE + the jar (smaller, no build tools) ----
 FROM eclipse-temurin:21-jre
