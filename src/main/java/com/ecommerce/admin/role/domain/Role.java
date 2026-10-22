@@ -16,9 +16,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.modulith.NamedInterface;
 
 @Entity
 @Table(name = "roles")
+@NamedInterface("model")
 public class Role {
 
     public static final String ADMIN = "ADMIN";

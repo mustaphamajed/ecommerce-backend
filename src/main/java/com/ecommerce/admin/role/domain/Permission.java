@@ -2,7 +2,9 @@ package com.ecommerce.admin.role.domain;
 
 import java.util.Arrays;
 import java.util.Optional;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface("model")
 public enum Permission {
     PRODUCT_READ("product:read"),
     PRODUCT_WRITE("product:write"),
