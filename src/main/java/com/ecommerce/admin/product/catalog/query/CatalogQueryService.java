@@ -1,4 +1,4 @@
-package com.ecommerce.admin.catalog.query;
+package com.ecommerce.admin.product.catalog.query;
 
 import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;

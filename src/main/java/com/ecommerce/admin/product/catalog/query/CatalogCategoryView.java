@@ -1,4 +1,4 @@
-package com.ecommerce.admin.catalog.query;
+package com.ecommerce.admin.product.catalog.query;
 
 public record CatalogCategoryView(Long id, String name, String slug) {
 }

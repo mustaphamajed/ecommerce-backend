@@ -1,4 +1,4 @@
-package com.ecommerce.admin.catalog.query;
+package com.ecommerce.admin.product.catalog.query;
 
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.query.ProductQueryRepository;
@@ -24,14 +24,14 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
             """;
 
     @Query(value = """
-            SELECT new com.ecommerce.admin.catalog.query.CatalogProductView(
+            SELECT new com.ecommerce.admin.product.catalog.query.CatalogProductView(
                 p.id, p.sku, p.name, p.description, p.price, c.name, c.slug,
             """ + ProductQueryRepository.IMAGE_URL + ", " + IN_STOCK + ")" + FROM_ACTIVE_PRODUCTS,
             countQuery = "SELECT COUNT(p) " + FROM_ACTIVE_PRODUCTS)
     Page<CatalogProductView> searchProducts(String pattern, String categorySlug, Pageable pageable);
 
     @Query("""
-            SELECT new com.ecommerce.admin.catalog.query.CatalogCategoryView(c.id, c.name, c.slug)
+            SELECT new com.ecommerce.admin.product.catalog.query.CatalogCategoryView(c.id, c.name, c.slug)
             FROM Category c
             WHERE EXISTS (
                 SELECT 1 FROM Product p

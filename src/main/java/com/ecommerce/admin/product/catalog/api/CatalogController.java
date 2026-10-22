@@ -1,8 +1,8 @@
-package com.ecommerce.admin.catalog.api;
+package com.ecommerce.admin.product.catalog.api;
 
-import com.ecommerce.admin.catalog.query.CatalogCategoryView;
-import com.ecommerce.admin.catalog.query.CatalogProductView;
-import com.ecommerce.admin.catalog.query.CatalogQueryService;
+import com.ecommerce.admin.product.catalog.query.CatalogCategoryView;
+import com.ecommerce.admin.product.catalog.query.CatalogProductView;
+import com.ecommerce.admin.product.catalog.query.CatalogQueryService;
 import com.ecommerce.admin.common.PageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;

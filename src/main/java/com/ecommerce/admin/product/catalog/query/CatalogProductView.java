@@ -1,4 +1,4 @@
-package com.ecommerce.admin.catalog.query;
+package com.ecommerce.admin.product.catalog.query;
 
 import java.math.BigDecimal;
 
