@@ -2,10 +2,10 @@ package com.ecommerce.admin.user.domain;
 
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.role.domain.RoleRepository;
+import com.ecommerce.admin.user.WarehouseDirectory;
+import com.ecommerce.admin.user.WarehouseSummary;
 import com.ecommerce.admin.user.exception.UnknownRolesException;
 import com.ecommerce.admin.user.exception.UnknownWarehousesException;
-import com.ecommerce.admin.stock.domain.Warehouse;
-import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 public class UserAssignments {
 
     private final RoleRepository roleRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final WarehouseDirectory warehouseDirectory;
 
-    public UserAssignments(RoleRepository roleRepository, WarehouseRepository warehouseRepository) {
+    public UserAssignments(RoleRepository roleRepository, WarehouseDirectory warehouseDirectory) {
         this.roleRepository = roleRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.warehouseDirectory = warehouseDirectory;
     }
 
     public Set<Role> resolveRoles(Set<Long> roleIds) {
@@ -33,8 +33,8 @@ public class UserAssignments {
     }
 
     public Set<Long> resolveWarehouses(Set<Long> warehouseIds) {
-        var knownIds = warehouseRepository.findAllById(warehouseIds).stream()
-                .map(Warehouse::getId)
+        var knownIds = warehouseDirectory.findByIds(warehouseIds).stream()
+                .map(WarehouseSummary::id)
                 .collect(Collectors.toSet());
         if (knownIds.size() != warehouseIds.size()) {
             var unknownIds = new HashSet<>(warehouseIds);

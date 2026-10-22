@@ -2,8 +2,8 @@ package com.ecommerce.admin.user.bootstrap;
 
 import com.ecommerce.admin.role.domain.Role;
 import com.ecommerce.admin.role.domain.RoleRepository;
-import com.ecommerce.admin.stock.domain.Warehouse;
-import com.ecommerce.admin.stock.domain.WarehouseRepository;
+import com.ecommerce.admin.user.WarehouseDirectory;
+import com.ecommerce.admin.user.WarehouseSummary;
 import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
 import java.util.Set;
@@ -26,7 +26,7 @@ public class AdminBootstrap implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final WarehouseDirectory warehouseDirectory;
     private final PasswordEncoder passwordEncoder;
     private final String email;
     private final String password;
@@ -34,13 +34,13 @@ public class AdminBootstrap implements ApplicationRunner {
     public AdminBootstrap(
             UserRepository userRepository,
             RoleRepository roleRepository,
-            WarehouseRepository warehouseRepository,
+            WarehouseDirectory warehouseDirectory,
             PasswordEncoder passwordEncoder,
             @Value("${app.bootstrap.admin.email}") String email,
             @Value("${app.bootstrap.admin.password}") String password) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.warehouseDirectory = warehouseDirectory;
         this.passwordEncoder = passwordEncoder;
         this.email = email;
         this.password = password;
@@ -60,7 +60,7 @@ public class AdminBootstrap implements ApplicationRunner {
                 .orElseThrow(() -> new IllegalStateException("The ADMIN role is missing, check data.sql"));
         var admin = new User(email, passwordEncoder.encode(password), "Admin", "Admin");
         admin.assignRoles(Set.of(adminRole));
-        admin.assignWarehouses(warehouseRepository.findAll().stream().map(Warehouse::getId).collect(Collectors.toSet()));
+        admin.assignWarehouses(warehouseDirectory.findAll().stream().map(WarehouseSummary::id).collect(Collectors.toSet()));
         userRepository.save(admin);
         log.info("Created the initial admin user {}", admin.getEmail());
     }

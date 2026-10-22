@@ -39,10 +39,9 @@ public interface UserQueryRepository extends Repository<User, Long> {
     List<UserRoleRow> findRoles(Collection<Long> userIds);
 
     @Query("""
-            SELECT new com.ecommerce.admin.user.query.UserWarehouseRow(u.id, w.id, w.code, w.name)
-            FROM User u JOIN u.warehouseIds warehouseId JOIN Warehouse w ON w.id = warehouseId
+            SELECT new com.ecommerce.admin.user.query.UserWarehouseRow(u.id, warehouseId)
+            FROM User u JOIN u.warehouseIds warehouseId
             WHERE u.id IN :userIds
-            ORDER BY w.code
             """)
     List<UserWarehouseRow> findWarehouses(Collection<Long> userIds);
 }

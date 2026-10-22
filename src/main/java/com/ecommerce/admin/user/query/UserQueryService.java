@@ -1,13 +1,17 @@
 package com.ecommerce.admin.user.query;
 
-import com.ecommerce.admin.user.WarehouseSummary;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 import com.ecommerce.admin.common.AllowedSort;
 import com.ecommerce.admin.common.PageResponse;
 import com.ecommerce.admin.common.SearchPatterns;
+import com.ecommerce.admin.user.WarehouseDirectory;
+import com.ecommerce.admin.user.WarehouseSummary;
 import com.ecommerce.admin.user.exception.UserNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +29,11 @@ public class UserQueryService {
             Set.of("email", "firstName", "lastName", "createdAt", "updatedAt");
 
     private final UserQueryRepository repository;
+    private final WarehouseDirectory warehouseDirectory;
 
-    public UserQueryService(UserQueryRepository repository) {
+    public UserQueryService(UserQueryRepository repository, WarehouseDirectory warehouseDirectory) {
         this.repository = repository;
+        this.warehouseDirectory = warehouseDirectory;
     }
 
     public PageResponse<UserView> search(String query, Boolean enabled, Pageable pageable) {
@@ -55,10 +61,15 @@ public class UserQueryService {
     }
 
     private Map<Long, List<WarehouseSummary>> warehousesByUser(List<Long> userIds) {
-        return repository.findWarehouses(userIds).stream()
+        var rows = repository.findWarehouses(userIds);
+        var warehouseIds = rows.stream().map(UserWarehouseRow::warehouseId).collect(toSet());
+        var warehousesById = warehouseDirectory.findByIds(warehouseIds).stream()
+                .collect(toMap(WarehouseSummary::id, warehouse -> warehouse));
+        return rows.stream()
+                .filter(row -> warehousesById.containsKey(row.warehouseId()))
+                .sorted(comparing(row -> warehousesById.get(row.warehouseId()).code()))
                 .collect(groupingBy(UserWarehouseRow::userId,
-                        mapping(row -> new WarehouseSummary(row.warehouseId(), row.warehouseCode(),
-                                row.warehouseName()), toList())));
+                        mapping(row -> warehousesById.get(row.warehouseId()), toList())));
     }
 
     private UserView toView(
