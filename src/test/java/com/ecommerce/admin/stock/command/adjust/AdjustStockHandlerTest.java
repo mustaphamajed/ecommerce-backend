@@ -82,7 +82,7 @@ class AdjustStockHandlerTest {
 
     @BeforeEach
     void setUp() {
-        stockProduct = new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", false);
+        stockProduct = new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", null, false);
         product = withId(new Product("SHOE-001", "Running shoe", null, new BigDecimal("59.90"), null), PRODUCT_ID);
         warehouse = withId(new Warehouse("PAR", "Paris"), WAREHOUSE_ID);
         actor = withId(new User("karim@shop.local", "hash", "Karim", "Haddad"), ACTOR_ID);
@@ -139,7 +139,7 @@ class AdjustStockHandlerTest {
     @Test
     void rejectsAnArchivedProduct() {
         when(stockProducts.findById(PRODUCT_ID))
-                .thenReturn(Optional.of(new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", true)));
+                .thenReturn(Optional.of(new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", null, true)));
 
         assertThatThrownBy(() -> handler.handle(command(5, MovementReason.PURCHASE)))
                 .isInstanceOf(ProductArchivedException.class);

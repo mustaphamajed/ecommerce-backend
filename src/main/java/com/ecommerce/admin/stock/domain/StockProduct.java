@@ -18,22 +18,24 @@ public class StockProduct {
     @Column(nullable = false, length = 200)
     private String name;
 
+    @Column(length = 100)
+    private String categoryName;
+
     @Column(nullable = false)
     private boolean archived;
 
     protected StockProduct() {
     }
 
-    public StockProduct(Long id, String sku, String name, boolean archived) {
+    public StockProduct(Long id, String sku, String name, String categoryName, boolean archived) {
         this.id = id;
-        this.sku = sku;
-        this.name = name;
-        this.archived = archived;
+        update(sku, name, categoryName, archived);
     }
 
-    public void update(String sku, String name, boolean archived) {
+    public void update(String sku, String name, String categoryName, boolean archived) {
         this.sku = sku;
         this.name = name;
+        this.categoryName = categoryName;
         this.archived = archived;
     }
 
@@ -47,6 +49,10 @@ public class StockProduct {
 
     public String getName() {
         return name;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public boolean isArchived() {

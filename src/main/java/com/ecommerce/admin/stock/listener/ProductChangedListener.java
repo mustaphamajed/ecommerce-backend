@@ -18,7 +18,8 @@ public class ProductChangedListener {
     @ApplicationModuleListener
     void on(ProductChanged event) {
         products.findById(event.productId()).ifPresentOrElse(
-                product -> product.update(event.sku(), event.name(), event.archived()),
-                () -> products.save(new StockProduct(event.productId(), event.sku(), event.name(), event.archived())));
+                product -> product.update(event.sku(), event.name(), event.categoryName(), event.archived()),
+                () -> products.save(new StockProduct(
+                        event.productId(), event.sku(), event.name(), event.categoryName(), event.archived())));
     }
 }

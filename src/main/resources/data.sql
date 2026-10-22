@@ -32,6 +32,8 @@ ON CONFLICT DO NOTHING;
 INSERT INTO warehouses (code, name, created_at) VALUES ('MAIN', 'Main warehouse', now())
 ON CONFLICT (code) DO NOTHING;
 
-INSERT INTO stock_products (id, sku, name, archived)
-SELECT id, sku, name, status = 'ARCHIVED' FROM products
-ON CONFLICT (id) DO UPDATE SET sku = EXCLUDED.sku, name = EXCLUDED.name, archived = EXCLUDED.archived;
+INSERT INTO stock_products (id, sku, name, category_name, archived)
+SELECT p.id, p.sku, p.name, c.name, p.status = 'ARCHIVED'
+FROM products p LEFT JOIN categories c ON c.id = p.category_id
+ON CONFLICT (id) DO UPDATE SET sku = EXCLUDED.sku, name = EXCLUDED.name,
+    category_name = EXCLUDED.category_name, archived = EXCLUDED.archived;
