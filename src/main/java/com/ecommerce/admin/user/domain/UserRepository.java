@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    long countByEnabled(boolean enabled);
+
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);

@@ -4,6 +4,7 @@ import com.ecommerce.admin.product.ProductStatistics;
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.stock.query.StockQueryService;
 import com.ecommerce.admin.stock.query.WarehouseStockSummary;
+import com.ecommerce.admin.user.UserStatistics;
 import java.util.Collection;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,15 @@ public class DashboardQueryService {
 
     private static final int RECENT_MOVEMENTS = 5;
 
-    private final DashboardQueryRepository repository;
-    private final StockQueryService stockQueries;
     private final ProductStatistics productStatistics;
+    private final StockQueryService stockQueries;
+    private final UserStatistics userStatistics;
 
     public DashboardQueryService(
-            DashboardQueryRepository repository, StockQueryService stockQueries, ProductStatistics productStatistics) {
-        this.repository = repository;
-        this.stockQueries = stockQueries;
+            ProductStatistics productStatistics, StockQueryService stockQueries, UserStatistics userStatistics) {
         this.productStatistics = productStatistics;
+        this.stockQueries = stockQueries;
+        this.userStatistics = userStatistics;
     }
 
     public DashboardView findDashboard(Collection<String> authorities) {
@@ -46,6 +47,7 @@ public class DashboardQueryService {
     }
 
     private UserStats userStats() {
-        return new UserStats(repository.countUsers(true), repository.countUsers(false));
+        var counts = userStatistics.counts();
+        return new UserStats(counts.enabled(), counts.disabled());
     }
 }
