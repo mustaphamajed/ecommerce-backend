@@ -8,6 +8,7 @@ COPY mvnw pom.xml ./
 COPY .mvn .mvn
 RUN ./mvnw dependency:go-offline -B
 
+COPY .git .git
 COPY src src
 RUN ./mvnw package -DskipTests -B
 
