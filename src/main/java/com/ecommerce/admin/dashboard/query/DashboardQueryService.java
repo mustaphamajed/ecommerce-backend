@@ -1,5 +1,6 @@
 package com.ecommerce.admin.dashboard.query;
 
+import com.ecommerce.admin.product.ProductStatistics;
 import com.ecommerce.admin.product.domain.ProductStatus;
 import com.ecommerce.admin.role.domain.Permission;
 import com.ecommerce.admin.stock.domain.Stock;
@@ -17,10 +18,13 @@ public class DashboardQueryService {
 
     private final DashboardQueryRepository repository;
     private final StockQueryService stockQueries;
+    private final ProductStatistics productStatistics;
 
-    public DashboardQueryService(DashboardQueryRepository repository, StockQueryService stockQueries) {
+    public DashboardQueryService(
+            DashboardQueryRepository repository, StockQueryService stockQueries, ProductStatistics productStatistics) {
         this.repository = repository;
         this.stockQueries = stockQueries;
+        this.productStatistics = productStatistics;
     }
 
     public DashboardView findDashboard(Collection<String> authorities) {
@@ -31,14 +35,12 @@ public class DashboardQueryService {
     }
 
     private CatalogStats catalogStats() {
-        return new CatalogStats(
-                repository.countProducts(ProductStatus.ACTIVE),
-                repository.countProducts(ProductStatus.ARCHIVED),
-                repository.countCategories());
+        var counts = productStatistics.counts();
+        return new CatalogStats(counts.active(), counts.archived(), counts.categories());
     }
 
     private StockStats stockStats() {
-        long activeProducts = repository.countProducts(ProductStatus.ACTIVE);
+        long activeProducts = productStatistics.counts().active();
         var warehouses = repository.summarizeWarehouses(ProductStatus.ACTIVE, Stock.LOW_STOCK_THRESHOLD).stream()
                 .map(row -> new WarehouseStockSummary(
                         row.warehouseId(),

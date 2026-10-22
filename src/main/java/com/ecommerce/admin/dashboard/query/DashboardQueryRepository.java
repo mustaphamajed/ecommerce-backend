@@ -8,12 +8,6 @@ import org.springframework.data.repository.Repository;
 
 public interface DashboardQueryRepository extends Repository<Product, Long> {
 
-    @Query("SELECT COUNT(p) FROM Product p WHERE p.status = :status")
-    long countProducts(ProductStatus status);
-
-    @Query("SELECT COUNT(c) FROM Category c")
-    long countCategories();
-
     @Query("SELECT COUNT(u) FROM User u WHERE u.enabled = :enabled")
     long countUsers(boolean enabled);
 
