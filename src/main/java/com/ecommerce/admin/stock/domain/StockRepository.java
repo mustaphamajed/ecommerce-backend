@@ -24,7 +24,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
             SET s.quantity = s.quantity + :change,
                 s.version = s.version + 1,
                 s.updatedAt = :now
-            WHERE s.product.id = :productId
+            WHERE s.productId = :productId
               AND s.warehouse.id = :warehouseId
               AND s.quantity + :change >= 0
             """)

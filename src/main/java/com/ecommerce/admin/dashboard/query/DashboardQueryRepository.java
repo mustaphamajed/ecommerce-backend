@@ -26,7 +26,7 @@ public interface DashboardQueryRepository extends Repository<Product, Long> {
                 SUM(CASE WHEN p.status = :active AND s.quantity > 0 THEN 1 ELSE 0 END))
             FROM Warehouse w
             LEFT JOIN Stock s ON s.warehouse = w
-            LEFT JOIN s.product p
+            LEFT JOIN Product p ON p.id = s.productId
             GROUP BY w.id, w.code, w.name
             ORDER BY w.code
             """)

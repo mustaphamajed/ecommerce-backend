@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.Stock;
@@ -32,7 +31,6 @@ import com.ecommerce.admin.user.domain.User;
 import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.warehouse.domain.Warehouse;
 import com.ecommerce.admin.warehouse.domain.WarehouseRepository;
-import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,14 +74,12 @@ class AdjustStockHandlerTest {
     private AdjustStockHandler handler;
 
     private StockProduct stockProduct;
-    private Product product;
     private Warehouse warehouse;
     private User actor;
 
     @BeforeEach
     void setUp() {
         stockProduct = new StockProduct(PRODUCT_ID, "SHOE-001", "Running shoe", null, false);
-        product = withId(new Product("SHOE-001", "Running shoe", null, new BigDecimal("59.90"), null), PRODUCT_ID);
         warehouse = withId(new Warehouse("PAR", "Paris"), WAREHOUSE_ID);
         actor = withId(new User("karim@shop.local", "hash", "Karim", "Haddad"), ACTOR_ID);
     }
@@ -163,7 +159,7 @@ class AdjustStockHandlerTest {
     void rejectsASaleLargerThanTheStock() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(-5), any())).thenReturn(0);
-        var stock = new Stock(product, warehouse);
+        var stock = new Stock(PRODUCT_ID, warehouse);
         ReflectionTestUtils.setField(stock, "quantity", 2);
         when(stockRepository.findByProductIdAndWarehouseId(PRODUCT_ID, WAREHOUSE_ID)).thenReturn(Optional.of(stock));
 

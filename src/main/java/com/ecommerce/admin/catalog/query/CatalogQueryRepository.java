@@ -12,7 +12,7 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
 
     String IN_STOCK = """
             CASE WHEN EXISTS (
-                SELECT 1 FROM Stock s WHERE s.product = p AND s.quantity > 0
+                SELECT 1 FROM Stock s WHERE s.productId = p.id AND s.quantity > 0
             ) THEN true ELSE false END
             """;
 
