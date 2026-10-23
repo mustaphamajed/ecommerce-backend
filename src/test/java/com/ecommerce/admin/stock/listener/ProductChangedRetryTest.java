@@ -53,12 +53,20 @@ class ProductChangedRetryTest extends IntegrationTest {
         incompletePublications.resubmitIncompletePublications(publication -> true);
 
         await().atMost(TIMEOUT).until(() -> stockProducts.existsById(productId));
-        assertThat(incompleteEventsFor("RETRY-001")).isZero();
+        await().atMost(TIMEOUT).until(() -> storedEventsFor("RETRY-001") == 0);
     }
 
     private int incompleteEventsFor(String sku) {
+        return countEvents("completion_date IS NULL AND serialized_event LIKE ?", sku);
+    }
+
+    private int storedEventsFor(String sku) {
+        return countEvents("serialized_event LIKE ?", sku);
+    }
+
+    private int countEvents(String condition, String sku) {
         return jdbc.queryForObject(
-                "SELECT COUNT(*) FROM event_publication WHERE completion_date IS NULL AND serialized_event LIKE ?",
+                "SELECT COUNT(*) FROM event_publication WHERE " + condition,
                 Integer.class,
                 "%\"sku\":\"" + sku + "\"%");
     }
