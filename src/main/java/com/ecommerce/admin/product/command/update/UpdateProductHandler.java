@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.command.update;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.product.ProductChanged;
+import com.ecommerce.admin.product.ProductEvents;
 import com.ecommerce.admin.product.domain.ProductCategories;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import com.ecommerce.admin.product.exception.DuplicateSkuException;
@@ -36,7 +36,7 @@ public class UpdateProductHandler implements CommandHandler<UpdateProductCommand
                 command.description(),
                 command.price(),
                 categories.resolve(command.categoryId()));
-        events.publishEvent(ProductChanged.from(product));
+        events.publishEvent(ProductEvents.changed(product));
         return null;
     }
 }

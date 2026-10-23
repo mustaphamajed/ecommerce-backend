@@ -1,6 +1,6 @@
 package com.ecommerce.admin.stock.listener;
 
-import com.ecommerce.admin.product.ProductChanged;
+import com.ecommerce.admin.events.ProductChanged;
 import com.ecommerce.admin.stock.domain.StockProduct;
 import com.ecommerce.admin.stock.domain.StockProductRepository;
 import org.springframework.modulith.events.ApplicationModuleListener;

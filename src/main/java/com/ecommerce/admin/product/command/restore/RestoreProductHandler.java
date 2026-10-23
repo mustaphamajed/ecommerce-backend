@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.command.restore;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.product.ProductChanged;
+import com.ecommerce.admin.product.ProductEvents;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class RestoreProductHandler implements CommandHandler<RestoreProductComma
     public Void handle(RestoreProductCommand command) {
         var product = repository.findByIdOrThrow(command.productId());
         product.restore();
-        events.publishEvent(ProductChanged.from(product));
+        events.publishEvent(ProductEvents.changed(product));
         return null;
     }
 }

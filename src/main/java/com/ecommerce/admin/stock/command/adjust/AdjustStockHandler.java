@@ -1,7 +1,7 @@
 package com.ecommerce.admin.stock.command.adjust;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.stock.StockAvailabilityChanged;
+import com.ecommerce.admin.events.StockAvailabilityChanged;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.domain.StockMovement;
@@ -9,6 +9,8 @@ import com.ecommerce.admin.stock.domain.StockMovementRepository;
 import com.ecommerce.admin.stock.domain.StockProduct;
 import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
+import com.ecommerce.admin.stock.domain.Warehouse;
+import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
 import com.ecommerce.admin.stock.exception.InvalidMovementException;
 import com.ecommerce.admin.stock.exception.ProductArchivedException;
@@ -16,8 +18,6 @@ import com.ecommerce.admin.stock.exception.UnknownStockProductException;
 import com.ecommerce.admin.stock.exception.UnknownWarehouseException;
 import com.ecommerce.admin.stock.exception.WarehouseAccessDeniedException;
 import com.ecommerce.admin.user.ActorLookup;
-import com.ecommerce.admin.stock.domain.Warehouse;
-import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.time.Instant;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

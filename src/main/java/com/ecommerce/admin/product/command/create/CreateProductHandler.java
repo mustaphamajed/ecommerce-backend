@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.command.create;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.product.ProductChanged;
+import com.ecommerce.admin.product.ProductEvents;
 import com.ecommerce.admin.product.ProductMetrics;
 import com.ecommerce.admin.product.domain.Product;
 import com.ecommerce.admin.product.domain.ProductCategories;
@@ -44,7 +44,7 @@ public class CreateProductHandler implements CommandHandler<CreateProductCommand
                 categories.resolve(command.categoryId()));
         Long id = repository.save(product).getId();
         metrics.productCreated();
-        events.publishEvent(ProductChanged.from(product));
+        events.publishEvent(ProductEvents.changed(product));
         return id;
     }
 }

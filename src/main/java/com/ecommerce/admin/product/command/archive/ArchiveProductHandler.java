@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.command.archive;
 
 import com.ecommerce.admin.common.CommandHandler;
-import com.ecommerce.admin.product.ProductChanged;
+import com.ecommerce.admin.product.ProductEvents;
 import com.ecommerce.admin.product.ProductMetrics;
 import com.ecommerce.admin.product.domain.ProductRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,7 +28,7 @@ public class ArchiveProductHandler implements CommandHandler<ArchiveProductComma
         var product = repository.findByIdOrThrow(command.productId());
         product.archive();
         metrics.productArchived();
-        events.publishEvent(ProductChanged.from(product));
+        events.publishEvent(ProductEvents.changed(product));
         return null;
     }
 }

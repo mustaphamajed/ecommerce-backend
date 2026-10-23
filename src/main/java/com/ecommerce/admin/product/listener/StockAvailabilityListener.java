@@ -1,7 +1,7 @@
 package com.ecommerce.admin.product.listener;
 
+import com.ecommerce.admin.events.StockAvailabilityChanged;
 import com.ecommerce.admin.product.domain.ProductRepository;
-import com.ecommerce.admin.stock.StockAvailabilityChanged;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
