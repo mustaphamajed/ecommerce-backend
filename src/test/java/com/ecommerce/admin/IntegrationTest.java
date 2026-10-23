@@ -16,7 +16,7 @@ public abstract class IntegrationTest {
     private static final int STORAGE_PORT = 9000;
 
     @ServiceConnection
-    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:17");
+    public static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:17");
 
     static final GenericContainer<?> RUSTFS = new GenericContainer<>("rustfs/rustfs:1.0.3")
             .withEnv("RUSTFS_ACCESS_KEY", STORAGE_ACCESS_KEY)
