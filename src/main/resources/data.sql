@@ -42,3 +42,6 @@ UPDATE stock_movements m
 SET created_by_name = u.first_name || ' ' || u.last_name
 FROM users u
 WHERE u.id = m.created_by AND m.created_by_name IS NULL;
+
+UPDATE products p
+SET in_stock = EXISTS (SELECT 1 FROM stock s WHERE s.product_id = p.id AND s.quantity > 0);

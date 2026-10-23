@@ -10,12 +10,6 @@ import org.springframework.data.repository.Repository;
 
 public interface CatalogQueryRepository extends Repository<Product, Long> {
 
-    String IN_STOCK = """
-            CASE WHEN EXISTS (
-                SELECT 1 FROM Stock s WHERE s.productId = p.id AND s.quantity > 0
-            ) THEN true ELSE false END
-            """;
-
     String FROM_ACTIVE_PRODUCTS = """
              FROM Product p LEFT JOIN p.category c
              WHERE p.status = com.ecommerce.admin.product.domain.ProductStatus.ACTIVE
@@ -26,7 +20,7 @@ public interface CatalogQueryRepository extends Repository<Product, Long> {
     @Query(value = """
             SELECT new com.ecommerce.admin.product.catalog.query.CatalogProductView(
                 p.id, p.sku, p.name, p.description, p.price, c.name, c.slug,
-            """ + ProductQueryRepository.IMAGE_URL + ", " + IN_STOCK + ")" + FROM_ACTIVE_PRODUCTS,
+            """ + ProductQueryRepository.IMAGE_URL + ", p.inStock)" + FROM_ACTIVE_PRODUCTS,
             countQuery = "SELECT COUNT(p) " + FROM_ACTIVE_PRODUCTS)
     Page<CatalogProductView> searchProducts(String pattern, String categorySlug, Pageable pageable);
 
