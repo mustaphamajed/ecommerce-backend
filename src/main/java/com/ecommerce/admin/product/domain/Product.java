@@ -17,6 +17,7 @@ import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -50,6 +51,10 @@ public class Product {
 
     @Column(length = 255)
     private String imageKey;
+
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    private boolean inStock;
 
     @Version
     private Long version;
@@ -87,6 +92,10 @@ public class Product {
 
     public void restore() {
         this.status = ProductStatus.ACTIVE;
+    }
+
+    public boolean isInStock() {
+        return inStock;
     }
 
     public boolean isArchived() {
