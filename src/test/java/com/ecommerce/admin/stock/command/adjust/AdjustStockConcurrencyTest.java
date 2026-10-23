@@ -1,18 +1,21 @@
 package com.ecommerce.admin.stock.command.adjust;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import com.ecommerce.admin.IntegrationTest;
 import com.ecommerce.admin.product.command.create.CreateProductCommand;
 import com.ecommerce.admin.product.command.create.CreateProductHandler;
 import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.StockMovementRepository;
+import com.ecommerce.admin.stock.domain.StockProductRepository;
 import com.ecommerce.admin.stock.domain.StockRepository;
 import com.ecommerce.admin.stock.exception.InsufficientStockException;
 import com.ecommerce.admin.user.domain.UserRepository;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -44,6 +47,9 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
     @Autowired
     private StockMovementRepository movements;
 
+    @Autowired
+    private StockProductRepository stockProducts;
+
     @Value("${app.bootstrap.admin.email}")
     private String adminEmail;
 
@@ -51,6 +57,7 @@ class AdjustStockConcurrencyTest extends IntegrationTest {
     void parallelSalesNeverSellMoreThanTheStock() throws Exception {
         Long productId = createProduct.handle(
                 new CreateProductCommand("CONC-001", "Concurrency test", null, BigDecimal.TEN, null));
+        await().atMost(Duration.ofSeconds(5)).until(() -> stockProducts.existsById(productId));
         var warehouse = warehouses.save(new Warehouse("CONC", "Concurrency warehouse"));
         Long adminId = users.findByEmail(adminEmail).orElseThrow().getId();
         handler.handle(new AdjustStockCommand(
