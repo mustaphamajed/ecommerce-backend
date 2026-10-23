@@ -1,6 +1,7 @@
 package com.ecommerce.admin.stock.command.adjust;
 
 import com.ecommerce.admin.common.CommandHandler;
+import com.ecommerce.admin.stock.StockAvailabilityChanged;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.Stock;
 import com.ecommerce.admin.stock.domain.StockMovement;
@@ -18,6 +19,7 @@ import com.ecommerce.admin.user.ActorLookup;
 import com.ecommerce.admin.stock.domain.Warehouse;
 import com.ecommerce.admin.stock.domain.WarehouseRepository;
 import java.time.Instant;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
     private final WarehouseRepository warehouseRepository;
     private final ActorLookup actors;
     private final StockMetrics metrics;
+    private final ApplicationEventPublisher events;
 
     public AdjustStockHandler(
             StockRepository stockRepository,
@@ -38,13 +41,15 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
             StockProductRepository stockProducts,
             WarehouseRepository warehouseRepository,
             ActorLookup actors,
-            StockMetrics metrics) {
+            StockMetrics metrics,
+            ApplicationEventPublisher events) {
         this.stockRepository = stockRepository;
         this.movementRepository = movementRepository;
         this.stockProducts = stockProducts;
         this.warehouseRepository = warehouseRepository;
         this.actors = actors;
         this.metrics = metrics;
+        this.events = events;
     }
 
     @Override
@@ -68,7 +73,16 @@ public class AdjustStockHandler implements CommandHandler<AdjustStockCommand, Lo
                 product.getId(), warehouse, command.quantityChange(), command.reason(), command.note(), actor.id(), actor.fullName());
         Long id = movementRepository.save(movement).getId();
         metrics.movementRecorded(command.reason(), command.quantityChange());
+        publishAvailabilityIfChanged(product.getId(), command.quantityChange());
         return id;
+    }
+
+    private void publishAvailabilityIfChanged(Long productId, int quantityChange) {
+        long totalAfter = stockRepository.totalQuantity(productId);
+        long totalBefore = totalAfter - quantityChange;
+        if ((totalBefore > 0) != (totalAfter > 0)) {
+            events.publishEvent(new StockAvailabilityChanged(productId, totalAfter > 0));
+        }
     }
 
     private void validateMovement(AdjustStockCommand command) {

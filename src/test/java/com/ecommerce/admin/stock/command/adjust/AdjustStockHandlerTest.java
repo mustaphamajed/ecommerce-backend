@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.ecommerce.admin.stock.StockAvailabilityChanged;
 import com.ecommerce.admin.stock.StockMetrics;
 import com.ecommerce.admin.stock.domain.MovementReason;
 import com.ecommerce.admin.stock.domain.Stock;
@@ -38,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,6 +68,9 @@ class AdjustStockHandlerTest {
     @Mock
     private StockMetrics metrics;
 
+    @Mock
+    private ApplicationEventPublisher events;
+
     @InjectMocks
     private AdjustStockHandler handler;
 
@@ -82,6 +87,7 @@ class AdjustStockHandlerTest {
     void recordsAValidMovement() {
         givenProductWarehouseAndActorExist();
         when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(5), any())).thenReturn(1);
+        when(stockRepository.totalQuantity(PRODUCT_ID)).thenReturn(5L);
         when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
 
         Long movementId = handler.handle(command(5, MovementReason.PURCHASE));
@@ -99,6 +105,31 @@ class AdjustStockHandlerTest {
         assertThat(saved.getValue().getCreatedById()).isEqualTo(ACTOR_ID);
         assertThat(saved.getValue().getCreatedByName()).isEqualTo("Karim Haddad");
         verify(metrics).movementRecorded(MovementReason.PURCHASE, 5);
+        verify(events).publishEvent(new StockAvailabilityChanged(PRODUCT_ID, true));
+    }
+
+    @Test
+    void noAvailabilityEventWhenTheProductStaysInStock() {
+        givenProductWarehouseAndActorExist();
+        when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(-1), any())).thenReturn(1);
+        when(stockRepository.totalQuantity(PRODUCT_ID)).thenReturn(3L);
+        when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
+
+        handler.handle(command(-1, MovementReason.SALE));
+
+        verifyNoInteractions(events);
+    }
+
+    @Test
+    void announcesWhenTheLastUnitIsSold() {
+        givenProductWarehouseAndActorExist();
+        when(stockRepository.applyChange(eq(PRODUCT_ID), eq(WAREHOUSE_ID), eq(-1), any())).thenReturn(1);
+        when(stockRepository.totalQuantity(PRODUCT_ID)).thenReturn(0L);
+        when(movementRepository.save(any())).thenAnswer(invocation -> withId(invocation.getArgument(0), MOVEMENT_ID));
+
+        handler.handle(command(-1, MovementReason.SALE));
+
+        verify(events).publishEvent(new StockAvailabilityChanged(PRODUCT_ID, false));
     }
 
     @Test

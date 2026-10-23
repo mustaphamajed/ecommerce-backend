@@ -10,6 +10,9 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     Optional<Stock> findByProductIdAndWarehouseId(Long productId, Long warehouseId);
 
+    @Query("SELECT COALESCE(SUM(s.quantity), 0) FROM Stock s WHERE s.productId = :productId")
+    long totalQuantity(Long productId);
+
     @Modifying
     @Query(nativeQuery = true, value = """
             INSERT INTO stock (product_id, warehouse_id, quantity, version, updated_at)
